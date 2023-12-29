@@ -22,6 +22,6 @@ public class Product extends BaseEntity {
     @Lob
     private String description;
     private int amount;
-    private Byte[] image;
+    private byte[] image;
 
 }
