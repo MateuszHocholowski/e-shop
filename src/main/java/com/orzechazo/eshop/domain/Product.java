@@ -23,5 +23,5 @@ public class Product extends BaseEntity {
     private String description;
     private int amount;
     private Byte[] image;
-
+    //przypadkowo spushowałem do maina :P
 }
