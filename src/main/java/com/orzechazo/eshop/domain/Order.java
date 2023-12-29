@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -18,9 +19,9 @@ import java.util.List;
 public class Order extends BaseEntity{
 
     private List<Product> products;
-    private LocalDate orderDate;
-    private LocalDate admissionDate;
-    private LocalDate paymentDate;
-    private LocalDate realizationDate;
+    private LocalDateTime orderDate;
+    private LocalDateTime admissionDate;
+    private LocalDateTime paymentDate;
+    private LocalDateTime realizationDate;
     private BigDecimal totalPrice;
 }
