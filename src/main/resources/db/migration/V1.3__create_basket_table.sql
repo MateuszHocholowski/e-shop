@@ -1,0 +1,9 @@
+CREATE TABLE BASKET
+(
+    ID bigint PRIMARY KEY unique not null auto_increment,
+    PRODUCT_ID bigint,
+    USER_ID bigint,
+    TOTAL_PRICE double,
+    FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS(ID),
+    FOREIGN KEY (USER_ID) REFERENCES USERS(ID)
+)
