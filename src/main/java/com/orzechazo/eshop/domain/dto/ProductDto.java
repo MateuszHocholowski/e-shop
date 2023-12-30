@@ -1,26 +1,20 @@
 package com.orzechazo.eshop.domain.dto;
 
 import jakarta.persistence.Lob;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class ProductDto {
 
-    private Long id;
-    private String name;
-    private BigDecimal netPrice;
-    private BigDecimal grossPrice;
+    Long id;
+    String name;
+    BigDecimal netPrice;
+    BigDecimal grossPrice;
     @Lob
-    private String description;
-    private int amount;
-    private byte[] image;
+    String description;
+    int amount;
+    byte[] image;
 }
