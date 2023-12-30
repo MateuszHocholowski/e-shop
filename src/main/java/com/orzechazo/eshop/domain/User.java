@@ -21,7 +21,7 @@ public class User extends BaseEntity{
     private String password;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Order> orders;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Product> favouriteProducts;
 
 }
