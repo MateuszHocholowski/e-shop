@@ -1,8 +1,6 @@
 package com.orzechazo.eshop.domain;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +21,7 @@ public class User extends BaseEntity{
     private List<Order> orders;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Product> favouriteProducts;
+    @OneToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
+    private Basket basket;
 
 }

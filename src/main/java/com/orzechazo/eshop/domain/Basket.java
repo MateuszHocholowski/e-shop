@@ -1,6 +1,6 @@
 package com.orzechazo.eshop.domain;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,9 @@ import java.util.List;
 @Entity
 public class Basket extends BaseEntity{
 
+    @OneToMany(mappedBy = "basket")
     List<Product> products;
+    @OneToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     User user;
     BigDecimal totalPrice;
 
