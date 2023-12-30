@@ -2,6 +2,7 @@ package com.orzechazo.eshop.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,9 @@ public class Product extends BaseEntity {
     private String description;
     private int amount;
     private byte[] image;
+    @ManyToOne
+    private Order order;
+    @ManyToOne
+    private User user;
 
 }
