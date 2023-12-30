@@ -1,27 +1,23 @@
 package com.orzechazo.eshop.domain;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Product extends BaseEntity {
+public class Basket extends BaseEntity{
 
-    private String name;
-    private BigDecimal netPrice;
-    private BigDecimal grossPrice;
-    @Lob
-    private String description;
-    private int amount;
-    private byte[] image;
+    List<Product> products;
+    User user;
+    BigDecimal totalPrice;
 
 }
