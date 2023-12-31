@@ -14,5 +14,6 @@ public class UserDto {
     String password;
     List<OrderDto> orders;
     List<ProductDto> favouriteProducts;
+    BasketDto basket;
 
 }
