@@ -18,4 +18,5 @@ public class ProductDto {
     String description;
     int amount;
     byte[] image;
+    BasketDto basket;
 }
