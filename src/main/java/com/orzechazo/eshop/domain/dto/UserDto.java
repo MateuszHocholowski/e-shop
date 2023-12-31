@@ -7,6 +7,7 @@ import lombok.*;
 import java.util.List;
 
 @Value
+@Builder
 public class UserDto {
 
     Long id;
@@ -14,5 +15,6 @@ public class UserDto {
     String password;
     List<OrderDto> orders;
     List<ProductDto> favouriteProducts;
+    BasketDto basket;
 
 }
