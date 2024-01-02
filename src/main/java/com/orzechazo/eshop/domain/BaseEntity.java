@@ -16,7 +16,6 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @MappedSuperclass
-@EqualsAndHashCode
 public class BaseEntity implements Serializable {
 
     @Id

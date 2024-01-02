@@ -30,7 +30,6 @@ class ProductMapperTest {
         assertEquals("test",mappedDto.getName());
         assertEquals("testDescription",mappedDto.getDescription());
         assertEquals(5,mappedDto.getAmount());
-        assertEquals(1L,mappedDto.getId());
         assertEquals(new BigDecimal("1.5"),mappedDto.getNetPrice());
         assertEquals(new BigDecimal("2"),mappedDto.getGrossPrice());
         assertNotNull(mappedDto.getImage());
@@ -40,7 +39,7 @@ class ProductMapperTest {
     void productDtoToProduct() {
         //given
         ProductDto productDto = ProductDto.builder().name("test").amount(5).description("testDescription")
-                .id(1L).netPrice(new BigDecimal("1.5")).grossPrice(new BigDecimal("2")).image(new byte[0])
+                .netPrice(new BigDecimal("1.5")).grossPrice(new BigDecimal("2")).image(new byte[0])
                 .build();
         //when
         Product mappedProduct = mapper.productDtoToProduct(productDto);
@@ -49,7 +48,6 @@ class ProductMapperTest {
         assertEquals("test",mappedProduct.getName());
         assertEquals("testDescription",mappedProduct.getDescription());
         assertEquals(5,mappedProduct.getAmount());
-        assertEquals(1L,mappedProduct.getId());
         assertEquals(new BigDecimal("1.5"),mappedProduct.getNetPrice());
         assertEquals(new BigDecimal("2"),mappedProduct.getGrossPrice());
         assertNotNull(mappedProduct.getImage());
