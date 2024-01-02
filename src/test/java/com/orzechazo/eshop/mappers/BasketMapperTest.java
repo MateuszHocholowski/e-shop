@@ -16,11 +16,11 @@ class BasketMapperTest {
     BasketMapper mapper = BasketMapper.INSTANCE;
     @Test
     void basketDtoToBasket() {
-        Basket basket = new Basket();
-        basket.setId(1L);
-        basket.setProducts(new ArrayList<>());
-        basket.setTotalPrice(new BigDecimal("12"));
-        basket.setUser(new User());
+        Basket expectedBasket = new Basket();
+        expectedBasket.setId(1L);
+        expectedBasket.setProducts(new ArrayList<>());
+        expectedBasket.setTotalPrice(new BigDecimal("12"));
+        expectedBasket.setUser(new User());
 
         BasketDto basketDto = BasketDto.builder()
                 .user(UserDto.builder().build())
@@ -31,16 +31,16 @@ class BasketMapperTest {
 
         Basket mappedBasket = mapper.basketDtoToBasket(basketDto);
 
-        assertEquals(basket,mappedBasket);
+        assertEquals(expectedBasket,mappedBasket);
     }
     @Test
     void basketDtoToBasketNotEquals() {
         //given
-        Basket basket = new Basket();
-        basket.setId(1L);
-        basket.setProducts(new ArrayList<>());
-        basket.setTotalPrice(new BigDecimal("12"));
-        basket.setUser(new User());
+        Basket expectedBasket = new Basket();
+        expectedBasket.setId(1L);
+        expectedBasket.setProducts(new ArrayList<>());
+        expectedBasket.setTotalPrice(new BigDecimal("12"));
+        expectedBasket.setUser(new User());
 
         BasketDto basketDto = BasketDto.builder()
                 .user(UserDto.builder().build())
@@ -51,7 +51,7 @@ class BasketMapperTest {
         //when
         Basket mappedBasket = mapper.basketDtoToBasket(basketDto);
         //then
-        assertNotEquals(basket,mappedBasket);
+        assertNotEquals(expectedBasket,mappedBasket);
     }
 
     @Test
@@ -63,7 +63,7 @@ class BasketMapperTest {
         basket.setTotalPrice(new BigDecimal("12"));
         basket.setUser(new User());
 
-        BasketDto basketDto = BasketDto.builder()
+        BasketDto expectedDto = BasketDto.builder()
                 .user(UserDto.builder().build())
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("12"))
@@ -72,7 +72,7 @@ class BasketMapperTest {
         //when
         BasketDto mappedDto = mapper.basketToBasketDto(basket);
         //then
-        assertEquals(basketDto,mappedDto);
+        assertEquals(expectedDto,mappedDto);
     }
 
     @Test
@@ -84,7 +84,7 @@ class BasketMapperTest {
         basket.setTotalPrice(new BigDecimal("12"));
         basket.setUser(new User());
 
-        BasketDto basketDto = BasketDto.builder()
+        BasketDto expectedDto = BasketDto.builder()
                 .user(UserDto.builder().build())
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("13"))
@@ -93,7 +93,7 @@ class BasketMapperTest {
         //when
         BasketDto mappedDto = mapper.basketToBasketDto(basket);
         //then
-        assertNotEquals(basketDto,mappedDto);
+        assertNotEquals(expectedDto,mappedDto);
     }
     @Test
     void basketDtoToBasketNull() {
