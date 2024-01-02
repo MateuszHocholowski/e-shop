@@ -25,7 +25,6 @@ class ProductServiceImplTest {
     private ProductServiceImpl productService;
     @Mock
     private ProductRepository productRepository;
-    private final ProductMapper productMapper = ProductMapper.INSTANCE;
     @Test
     void getAllProducts() {
         Product product1 = new Product();
@@ -78,7 +77,7 @@ class ProductServiceImplTest {
     void createProductExists() {
         //given
         ProductDto productDto = ProductDto.builder().id(1L).name("testName").build();
-        when(productRepository.findByName(any())).thenReturn(new Product());
+        when(productRepository.findByName(any())).thenReturn(Optional.of(new Product()));
         //when
         ProductDto returnedDto = productService.createProduct(productDto);
         //then

@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto createProduct(ProductDto productDto){
         Product newProduct = productMapper.productDtoToProduct(productDto);
-        if (productRepository.findByName(newProduct.getName()) == null) {
+        if (productRepository.findByName(newProduct.getName()).isEmpty()) {
             return saveProductAndReturnDto(newProduct);
         } else {
             System.out.println("Product with that name is already in Database");
