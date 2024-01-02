@@ -2,7 +2,6 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.UserDto;
-import com.orzechazo.eshop.mappers.UserMapper;
 import com.orzechazo.eshop.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,13 +71,12 @@ class UserServiceImplTest {
         UserDto returnedDto = userService.getUserByLogin("login1");
         //then
         assertEquals("login1",returnedDto.getLogin());
-        assertEquals(1L,returnedDto.getId());
     }
 
     @Test
     void createUser() {
         //given
-        UserDto userDto = UserDto.builder().id(1L).login("login1").build();
+        UserDto userDto = UserDto.builder().login("login1").build();
         User user = new User();
         user.setId(1L);
         user.setLogin("login1");
@@ -86,14 +84,13 @@ class UserServiceImplTest {
         //when
         UserDto createdDto = userService.createUser(userDto);
         //then
-        assertEquals(1L,createdDto.getId());
         assertEquals("login1",createdDto.getLogin());
         verify(userRepository,times(1)).save(any());
     }
     @Test
     void createUserExistingLogin() {
         //given
-        UserDto userDto = UserDto.builder().id(1L).login("login1").build();
+        UserDto userDto = UserDto.builder().login("login1").build();
         User user = new User();
         user.setId(1L);
         user.setLogin("login1");
@@ -107,7 +104,7 @@ class UserServiceImplTest {
     @Test
     void updateUser() {
         //given
-        UserDto userDto = UserDto.builder().id(1L).login("login1").build();
+        UserDto userDto = UserDto.builder().login("login1").build();
         User user = new User();
         user.setId(1L);
         user.setLogin("login1");
@@ -115,7 +112,6 @@ class UserServiceImplTest {
         //when
         UserDto createdDto = userService.updateUser(1L,userDto);
         //then
-        assertEquals(1L,createdDto.getId());
         assertEquals("login1",createdDto.getLogin());
         verify(userRepository,times(1)).save(any());
     }
