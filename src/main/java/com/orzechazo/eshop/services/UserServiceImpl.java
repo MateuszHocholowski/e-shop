@@ -20,32 +20,44 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<UserDto> getAllUsers() {
-
-        return null;
+        return userRepository.findAll().stream()
+                .map(userMapper::userToUserDto)
+                .toList();
     }
 
     @Override
     public UserDto getUserById(Long id) {
-        return null;
+        return userMapper.userToUserDto(userRepository.findById(id).orElseThrow(RuntimeException::new));
+    }
+
+    @Override
+    public UserDto getUserByLogin(String login) {
+        return userMapper.userToUserDto(userRepository.findByLogin(login).orElseThrow(RuntimeException::new));
     }
 
     @Override
     public UserDto createUser(UserDto userDto) {
+        User newUser = userMapper.userDtoToUser(userDto);
+        if (userRepository.findByLogin(newUser.getLogin()).isEmpty()) {
+            return saveUserAndReturnDto(newUser);
+        } else {
+            System.out.println("User with that Login already exists");
+        }
         return null;
     }
 
     @Override
     public UserDto updateUser(Long id, UserDto userDto) {
-        return null;
+        return saveUserAndReturnDto(userMapper.userDtoToUser(userDto));
     }
 
     @Override
     public UserDto saveUserAndReturnDto(User user) {
-        return null;
+        return userMapper.userToUserDto(userRepository.save(user));
     }
 
     @Override
     public void deleteUserById(Long id) {
-
+        userRepository.deleteById(id);
     }
 }
