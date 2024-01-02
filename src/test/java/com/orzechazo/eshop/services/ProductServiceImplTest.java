@@ -2,13 +2,11 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.ProductDto;
-import com.orzechazo.eshop.mappers.ProductMapper;
 import com.orzechazo.eshop.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -39,7 +37,6 @@ class ProductServiceImplTest {
         List<ProductDto> returnedDtos = productService.getAllProducts();
         //then
         assertEquals(2,returnedDtos.size());
-        assertEquals(1L,returnedDtos.get(0).getId());
         assertEquals("test2",returnedDtos.get(1).getName());
     }
 
@@ -53,14 +50,13 @@ class ProductServiceImplTest {
         //when
         ProductDto returnedDto = productService.getProductById(4L);
         //then
-        assertEquals(4L,returnedDto.getId());
         assertEquals(6,returnedDto.getAmount());
     }
 
     @Test
     void createProduct() {
         //given
-        ProductDto productDto = ProductDto.builder().id(1L).name("testName").build();
+        ProductDto productDto = ProductDto.builder().name("testName").build();
         Product product = new Product();
         product.setId(1L);
         product.setName("testName");
@@ -68,7 +64,6 @@ class ProductServiceImplTest {
         //when
         ProductDto returnedDto = productService.createProduct(productDto);
         //then
-        assertEquals(1L,returnedDto.getId());
         assertEquals("testName",returnedDto.getName());
         verify(productRepository,times(1)).save(any());
     }
@@ -76,7 +71,7 @@ class ProductServiceImplTest {
     @Test
     void createProductExists() {
         //given
-        ProductDto productDto = ProductDto.builder().id(1L).name("testName").build();
+        ProductDto productDto = ProductDto.builder().name("testName").build();
         when(productRepository.findByName(any())).thenReturn(Optional.of(new Product()));
         //when
         ProductDto returnedDto = productService.createProduct(productDto);
@@ -88,7 +83,7 @@ class ProductServiceImplTest {
     @Test
     void updateProduct() {
         //given
-        ProductDto productDto = ProductDto.builder().id(1L).name("testName").build();
+        ProductDto productDto = ProductDto.builder().name("testName").build();
         Product product = new Product();
         product.setId(1L);
         product.setName("testName");
@@ -96,7 +91,6 @@ class ProductServiceImplTest {
         //when
         ProductDto returnedDto = productService.updateProduct(1L, productDto);
         //then
-        assertEquals(1L,returnedDto.getId());
         assertEquals("testName",returnedDto.getName());
         verify(productRepository,times(1)).save(any());
     }
