@@ -21,15 +21,15 @@ class OrderMapperTest {
     @Test
     void orderDtoToOrder() {
         //given
-        Order order = new Order();
-        order.setOrderDate(DATE);
-        order.setId(1L);
-        order.setTotalPrice(new BigDecimal("12"));
-        order.setPaymentDate(DATE);
-        order.setAdmissionDate(DATE);
-        order.setRealizationDate(DATE);
-        order.setUser(new User());
-        order.setProducts(new ArrayList<>());
+        Order expectedOrder = new Order();
+        expectedOrder.setOrderDate(DATE);
+        expectedOrder.setId(1L);
+        expectedOrder.setTotalPrice(new BigDecimal("12"));
+        expectedOrder.setPaymentDate(DATE);
+        expectedOrder.setAdmissionDate(DATE);
+        expectedOrder.setRealizationDate(DATE);
+        expectedOrder.setUser(new User());
+        expectedOrder.setProducts(new ArrayList<>());
 
         OrderDto orderDto = OrderDto.builder()
                 .orderDate(DATE)
@@ -44,21 +44,21 @@ class OrderMapperTest {
         //when
         Order mappedOrder = mapper.orderDtoToOrder(orderDto);
         //then
-        assertEquals(order,mappedOrder);
+        assertEquals(expectedOrder,mappedOrder);
     }
 
     @Test
     void orderDtoToOrderNotEquals() {
         //given
-        Order order = new Order();
-        order.setOrderDate(DATE);
-        order.setId(1L);
-        order.setTotalPrice(new BigDecimal("12"));
-        order.setPaymentDate(DATE);
-        order.setAdmissionDate(DATE);
-        order.setRealizationDate(DATE);
-        order.setUser(new User());
-        order.setProducts(new ArrayList<>());
+        Order expectedOrder = new Order();
+        expectedOrder.setOrderDate(DATE);
+        expectedOrder.setId(1L);
+        expectedOrder.setTotalPrice(new BigDecimal("12"));
+        expectedOrder.setPaymentDate(DATE);
+        expectedOrder.setAdmissionDate(DATE);
+        expectedOrder.setRealizationDate(DATE);
+        expectedOrder.setUser(new User());
+        expectedOrder.setProducts(new ArrayList<>());
 
         OrderDto orderDto = OrderDto.builder()
                 .orderDate(DATE)
@@ -73,7 +73,7 @@ class OrderMapperTest {
         //when
         Order mappedOrder = mapper.orderDtoToOrder(orderDto);
         //then
-        assertNotEquals(order,mappedOrder);
+        assertNotEquals(expectedOrder,mappedOrder);
     }
     @Test
     void orderToOrderDto() {
@@ -88,7 +88,7 @@ class OrderMapperTest {
         order.setUser(new User());
         order.setProducts(new ArrayList<>());
 
-        OrderDto orderDto = OrderDto.builder()
+        OrderDto expectedDto = OrderDto.builder()
                 .orderDate(DATE)
                 .id(1L)
                 .totalPrice(new BigDecimal("12"))
@@ -101,7 +101,7 @@ class OrderMapperTest {
         //when
         OrderDto mappedDto = mapper.orderToOrderDto(order);
         //then
-        assertEquals(orderDto,mappedDto);
+        assertEquals(expectedDto,mappedDto);
     }
 
     @Test
@@ -117,7 +117,7 @@ class OrderMapperTest {
         order.setUser(new User());
         order.setProducts(new ArrayList<>());
 
-        OrderDto orderDto = OrderDto.builder()
+        OrderDto expectedDto = OrderDto.builder()
                 .orderDate(DATE)
                 .id(1L)
                 .totalPrice(new BigDecimal("13"))
@@ -130,7 +130,7 @@ class OrderMapperTest {
         //when
         OrderDto mappedDto = mapper.orderToOrderDto(order);
         //then
-        assertNotEquals(orderDto,mappedDto);
+        assertNotEquals(expectedDto,mappedDto);
     }
     @Test
     void orderDtoToOrderNull() {
