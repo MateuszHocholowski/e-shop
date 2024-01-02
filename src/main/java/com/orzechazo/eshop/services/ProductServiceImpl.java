@@ -50,8 +50,7 @@ public class ProductServiceImpl implements ProductService {
         return saveProductAndReturnDto(productToUpdate);
     }
 
-    @Override
-    public ProductDto saveProductAndReturnDto(Product product) {
+    private ProductDto saveProductAndReturnDto(Product product) {
         return productMapper.productToProductDto(productRepository.save(product));
     }
 
