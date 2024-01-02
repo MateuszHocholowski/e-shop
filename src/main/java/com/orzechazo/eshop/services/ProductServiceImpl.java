@@ -2,12 +2,13 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.ProductDto;
+import com.orzechazo.eshop.exceptions.BadRequestException;
+import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.ProductMapper;
 import com.orzechazo.eshop.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -27,8 +28,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long id) {
-        Product returnedProduct = productRepository.findById(id).orElseThrow(RuntimeException::new);
+    public ProductDto getProductByProductId(Long productId) {
+        Product returnedProduct = productRepository.findByProductId(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id: " + productId
+                        + " doesn't exist in database."));
         return productMapper.productToProductDto(returnedProduct);
     }
 
@@ -38,15 +41,14 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.findByName(newProduct.getName()).isEmpty()) {
             return saveProductAndReturnDto(newProduct);
         } else {
-            System.out.println("Product with that name is already in Database");
-            return null;
+            throw new BadRequestException("Product: " + productDto.getName() + " is already in database.");
         }
     }
 
     @Override
-    public ProductDto updateProduct(Long id, ProductDto productDto) {
+    public ProductDto updateProduct(Long productId, ProductDto productDto) {
         Product productToUpdate = productMapper.productDtoToProduct(productDto);
-        productToUpdate.setId(id);
+        productToUpdate.setProductId(productId);
         return saveProductAndReturnDto(productToUpdate);
     }
 
@@ -55,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductById(Long id) {
-        productRepository.deleteById(id);
+    public void deleteProductByProductId(Long id) {
+        productRepository.deleteByProductId(id);
     }
 }

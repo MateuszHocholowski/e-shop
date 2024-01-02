@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class ProductDto {
 
+    Long productId;
     String name;
     BigDecimal netPrice;
     BigDecimal grossPrice;
