@@ -25,7 +25,6 @@ class UserMapperTest {
         expectedUser.setFavouriteProducts(new ArrayList<>());
 
         UserDto userDto = UserDto.builder()
-                .id(1L)
                 .password("password")
                 .login("login")
                 .orders(new ArrayList<>())
@@ -49,7 +48,6 @@ class UserMapperTest {
         expectedUser.setFavouriteProducts(new ArrayList<>());
 
         UserDto userDto = UserDto.builder()
-                .id(1L)
                 .password("password2")
                 .login("login2")
                 .orders(new ArrayList<>())
@@ -73,7 +71,6 @@ class UserMapperTest {
         user.setFavouriteProducts(new ArrayList<>());
 
         UserDto expectedDto = UserDto.builder()
-                .id(1L)
                 .login("login")
                 .orders(new ArrayList<>())
                 .favouriteProducts(new ArrayList<>())
@@ -97,7 +94,6 @@ class UserMapperTest {
         user.setFavouriteProducts(new ArrayList<>());
 
         UserDto expectedDto = UserDto.builder()
-                .id(1L)
                 .login("login2")
                 .orders(new ArrayList<>())
                 .favouriteProducts(new ArrayList<>())

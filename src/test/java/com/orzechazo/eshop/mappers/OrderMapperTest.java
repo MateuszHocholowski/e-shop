@@ -33,7 +33,6 @@ class OrderMapperTest {
 
         OrderDto orderDto = OrderDto.builder()
                 .orderDate(DATE)
-                .id(1L)
                 .totalPrice(new BigDecimal("12"))
                 .paymentDate(DATE)
                 .realizationDate(DATE)
@@ -62,7 +61,6 @@ class OrderMapperTest {
 
         OrderDto orderDto = OrderDto.builder()
                 .orderDate(DATE)
-                .id(1L)
                 .totalPrice(new BigDecimal("13"))
                 .paymentDate(DATE)
                 .realizationDate(DATE)
@@ -90,7 +88,6 @@ class OrderMapperTest {
 
         OrderDto expectedDto = OrderDto.builder()
                 .orderDate(DATE)
-                .id(1L)
                 .totalPrice(new BigDecimal("12"))
                 .paymentDate(DATE)
                 .realizationDate(DATE)
@@ -119,7 +116,6 @@ class OrderMapperTest {
 
         OrderDto expectedDto = OrderDto.builder()
                 .orderDate(DATE)
-                .id(1L)
                 .totalPrice(new BigDecimal("13"))
                 .paymentDate(DATE)
                 .realizationDate(DATE)

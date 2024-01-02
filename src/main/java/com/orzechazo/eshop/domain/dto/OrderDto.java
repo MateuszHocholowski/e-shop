@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 public class OrderDto {
 
-    Long id;
     List<ProductDto> products;
     LocalDateTime orderDate;
     LocalDateTime admissionDate;
