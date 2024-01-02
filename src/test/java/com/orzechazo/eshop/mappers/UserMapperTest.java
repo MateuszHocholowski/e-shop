@@ -16,13 +16,13 @@ class UserMapperTest {
 
     @Test
     void userDtoToUser() {
-        User user = new User();
-        user.setBasket(new Basket());
-        user.setId(1L);
-        user.setPassword("password");
-        user.setLogin("login");
-        user.setOrders(new ArrayList<>());
-        user.setFavouriteProducts(new ArrayList<>());
+        User expectedUser = new User();
+        expectedUser.setBasket(new Basket());
+        expectedUser.setId(1L);
+        expectedUser.setPassword("password");
+        expectedUser.setLogin("login");
+        expectedUser.setOrders(new ArrayList<>());
+        expectedUser.setFavouriteProducts(new ArrayList<>());
 
         UserDto userDto = UserDto.builder()
                 .id(1L)
@@ -35,18 +35,18 @@ class UserMapperTest {
         //when
         User mappedUser = mapper.userDtoToUser(userDto);
         //then
-        assertEquals(user,mappedUser);
+        assertEquals(expectedUser,mappedUser);
     }
 
     @Test
     void userDtoToUserNotEquals() {
-        User user = new User();
-        user.setBasket(new Basket());
-        user.setId(1L);
-        user.setPassword("password");
-        user.setLogin("login");
-        user.setOrders(new ArrayList<>());
-        user.setFavouriteProducts(new ArrayList<>());
+        User expectedUser = new User();
+        expectedUser.setBasket(new Basket());
+        expectedUser.setId(1L);
+        expectedUser.setPassword("password");
+        expectedUser.setLogin("login");
+        expectedUser.setOrders(new ArrayList<>());
+        expectedUser.setFavouriteProducts(new ArrayList<>());
 
         UserDto userDto = UserDto.builder()
                 .id(1L)
@@ -59,7 +59,7 @@ class UserMapperTest {
         //when
         User mappedUser = mapper.userDtoToUser(userDto);
         //then
-        assertNotEquals(user,mappedUser);
+        assertNotEquals(expectedUser,mappedUser);
     }
     @Test
     void userToUserDto() {
@@ -72,7 +72,7 @@ class UserMapperTest {
         user.setOrders(new ArrayList<>());
         user.setFavouriteProducts(new ArrayList<>());
 
-        UserDto userDto = UserDto.builder()
+        UserDto expectedDto = UserDto.builder()
                 .id(1L)
                 .login("login")
                 .orders(new ArrayList<>())
@@ -82,7 +82,7 @@ class UserMapperTest {
         //when
         UserDto mappedDto = mapper.userToUserDto(user);
 
-        assertEquals(userDto,mappedDto);
+        assertEquals(expectedDto,mappedDto);
         assertNull(mappedDto.getPassword());
     }
     @Test
@@ -96,7 +96,7 @@ class UserMapperTest {
         user.setOrders(new ArrayList<>());
         user.setFavouriteProducts(new ArrayList<>());
 
-        UserDto userDto = UserDto.builder()
+        UserDto expectedDto = UserDto.builder()
                 .id(1L)
                 .login("login2")
                 .orders(new ArrayList<>())
@@ -106,7 +106,7 @@ class UserMapperTest {
         //when
         UserDto mappedDto = mapper.userToUserDto(user);
 
-        assertNotEquals(userDto,mappedDto);
+        assertNotEquals(expectedDto,mappedDto);
         assertNull(mappedDto.getPassword());
     }
     @Test
