@@ -10,7 +10,6 @@ import java.util.List;
 @Builder
 public class UserDto {
 
-    Long id;
     String login;
     String password;
     List<OrderDto> orders;

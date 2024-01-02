@@ -26,7 +26,6 @@ class BasketMapperTest {
                 .user(UserDto.builder().build())
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("12"))
-                .id(1L)
                 .build();
 
         Basket mappedBasket = mapper.basketDtoToBasket(basketDto);
@@ -46,7 +45,6 @@ class BasketMapperTest {
                 .user(UserDto.builder().build())
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("13"))
-                .id(1L)
                 .build();
         //when
         Basket mappedBasket = mapper.basketDtoToBasket(basketDto);
@@ -67,7 +65,6 @@ class BasketMapperTest {
                 .user(UserDto.builder().build())
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("12"))
-                .id(1L)
                 .build();
         //when
         BasketDto mappedDto = mapper.basketToBasketDto(basket);
@@ -88,7 +85,6 @@ class BasketMapperTest {
                 .user(UserDto.builder().build())
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("13"))
-                .id(1L)
                 .build();
         //when
         BasketDto mappedDto = mapper.basketToBasketDto(basket);
