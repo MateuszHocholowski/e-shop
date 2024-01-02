@@ -48,6 +48,34 @@ class OrderMapperTest {
     }
 
     @Test
+    void orderDtoToOrderNotEquals() {
+        //given
+        Order order = new Order();
+        order.setOrderDate(DATE);
+        order.setId(1L);
+        order.setTotalPrice(new BigDecimal("12"));
+        order.setPaymentDate(DATE);
+        order.setAdmissionDate(DATE);
+        order.setRealizationDate(DATE);
+        order.setUser(new User());
+        order.setProducts(new ArrayList<>());
+
+        OrderDto orderDto = OrderDto.builder()
+                .orderDate(DATE)
+                .id(1L)
+                .totalPrice(new BigDecimal("13"))
+                .paymentDate(DATE)
+                .realizationDate(DATE)
+                .admissionDate(DATE)
+                .user(UserDto.builder().build())
+                .products(new ArrayList<>())
+                .build();
+        //when
+        Order mappedOrder = mapper.orderDtoToOrder(orderDto);
+        //then
+        assertNotEquals(order,mappedOrder);
+    }
+    @Test
     void orderToOrderDto() {
         //given
         Order order = new Order();
@@ -76,6 +104,34 @@ class OrderMapperTest {
         assertEquals(orderDto,mappedDto);
     }
 
+    @Test
+    void orderToOrderDtoNotEquals() {
+        //given
+        Order order = new Order();
+        order.setOrderDate(DATE);
+        order.setId(1L);
+        order.setTotalPrice(new BigDecimal("12"));
+        order.setPaymentDate(DATE);
+        order.setAdmissionDate(DATE);
+        order.setRealizationDate(DATE);
+        order.setUser(new User());
+        order.setProducts(new ArrayList<>());
+
+        OrderDto orderDto = OrderDto.builder()
+                .orderDate(DATE)
+                .id(1L)
+                .totalPrice(new BigDecimal("13"))
+                .paymentDate(DATE)
+                .realizationDate(DATE)
+                .admissionDate(DATE)
+                .user(UserDto.builder().build())
+                .products(new ArrayList<>())
+                .build();
+        //when
+        OrderDto mappedDto = mapper.orderToOrderDto(order);
+        //then
+        assertNotEquals(orderDto,mappedDto);
+    }
     @Test
     void orderDtoToOrderNull() {
         //when
