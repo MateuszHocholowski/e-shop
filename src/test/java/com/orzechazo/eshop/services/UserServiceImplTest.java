@@ -26,8 +26,6 @@ class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    private final UserMapper userMapper = UserMapper.INSTANCE;
-
     @Test
     void getAllUsers() {
         //given
