@@ -1,17 +1,15 @@
 package com.orzechazo.eshop.services;
 
-import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.UserDto;
+import org.apache.coyote.BadRequestException;
 
 import java.util.List;
 
 public interface UserService {
     List<UserDto> getAllUsers();
-    UserDto getUserById(Long id);
-    UserDto getUserByLogin(String login);
-    UserDto createUser(UserDto userDto);
-    UserDto updateUser(Long id, UserDto userDto);
-    UserDto saveUserAndReturnDto(User user);
-    void deleteUserById(Long id);
+    UserDto getUserByLogin(String login) throws BadRequestException;
+    UserDto createUser(UserDto userDto) throws BadRequestException;
+    UserDto updateUser(String login, UserDto userDto);
+    void deleteUserByLogin(String login);
 
 }

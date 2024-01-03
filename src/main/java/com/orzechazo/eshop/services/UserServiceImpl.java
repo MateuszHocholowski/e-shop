@@ -2,6 +2,8 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.UserDto;
+import com.orzechazo.eshop.exceptions.BadRequestException;
+import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.UserMapper;
 import com.orzechazo.eshop.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -24,15 +26,10 @@ public class UserServiceImpl implements UserService{
                 .map(userMapper::userToUserDto)
                 .toList();
     }
-
-    @Override
-    public UserDto getUserById(Long id) {
-        return userMapper.userToUserDto(userRepository.findById(id).orElseThrow(RuntimeException::new));
-    }
-
     @Override
     public UserDto getUserByLogin(String login) {
-        return userMapper.userToUserDto(userRepository.findByLogin(login).orElseThrow(RuntimeException::new));
+        return userMapper.userToUserDto(userRepository.findByLogin(login)
+                .orElseThrow(() -> new ResourceNotFoundException("User: " + login + " doesn't exist in database")));
     }
 
     @Override
@@ -41,25 +38,23 @@ public class UserServiceImpl implements UserService{
         if (userRepository.findByLogin(newUser.getLogin()).isEmpty()) {
             return saveUserAndReturnDto(newUser);
         } else {
-            System.out.println("User with that Login already exists");
+            throw new BadRequestException("User: " + userDto.getLogin() + " is already in database.");
         }
-        return null;
     }
 
     @Override
-    public UserDto updateUser(Long id, UserDto userDto) {
+    public UserDto updateUser(String login, UserDto userDto) {
         User updateUser = userMapper.userDtoToUser(userDto);
-        updateUser.setId(id);
+        updateUser.setLogin(login);
         return saveUserAndReturnDto(updateUser);
     }
 
-    @Override
-    public UserDto saveUserAndReturnDto(User user) {
+    private UserDto saveUserAndReturnDto(User user) {
         return userMapper.userToUserDto(userRepository.save(user));
     }
 
     @Override
-    public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+    public void deleteUserByLogin(String login) {
+        userRepository.deleteByLogin(login);
     }
 }

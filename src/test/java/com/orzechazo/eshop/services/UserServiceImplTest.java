@@ -2,6 +2,8 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.UserDto;
+import com.orzechazo.eshop.exceptions.BadRequestException;
+import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +16,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,11 +30,9 @@ class UserServiceImplTest {
     void getAllUsers() {
         //given
         User user1 = new User();
-        user1.setId(1L);
         user1.setLogin("login1");
         user1.setPassword("password1");
         User user2 = new User();
-        user2.setId(2L);
         user2.setLogin("login2");
         user2.setPassword("password2");
         List<User> users = List.of(user1,user2);
@@ -47,20 +46,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserById() {
-        //given
-        User user1 = new User();
-        user1.setId(1L);
-        user1.setLogin("login1");
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
-        //when
-        UserDto returnedDto = userService.getUserById(1L);
-        //then
-        assertEquals(1L,user1.getId());
-        assertEquals("login1",returnedDto.getLogin());
-    }
-
-    @Test
     void getUserByLogin() {
         //given
         User user1 = new User();
@@ -71,6 +56,12 @@ class UserServiceImplTest {
         UserDto returnedDto = userService.getUserByLogin("login1");
         //then
         assertEquals("login1",returnedDto.getLogin());
+    }
+
+    @Test
+    void getUserByLoginNotFound() {
+        Exception exception = assertThrows(ResourceNotFoundException.class,() -> userService.getUserByLogin("test"));
+        assertEquals("User: test doesn't exist in database",exception.getMessage());
     }
 
     @Test
@@ -88,7 +79,7 @@ class UserServiceImplTest {
         verify(userRepository,times(1)).save(any());
     }
     @Test
-    void createUserExistingLogin() {
+    void createUserBadRequest() {
         //given
         UserDto userDto = UserDto.builder().login("login1").build();
         User user = new User();
@@ -96,9 +87,9 @@ class UserServiceImplTest {
         user.setLogin("login1");
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
         //when
-        UserDto createdDto = userService.createUser(userDto);
+        Exception exception = assertThrows(BadRequestException.class,() -> userService.createUser(userDto));
         //then
-        assertNull(createdDto);
+        assertEquals("User: login1 is already in database.",exception.getMessage());
         verify(userRepository,times(0)).save(any());
     }
     @Test
@@ -110,7 +101,7 @@ class UserServiceImplTest {
         user.setLogin("login1");
         when(userRepository.save(any())).thenReturn(user);
         //when
-        UserDto createdDto = userService.updateUser(1L,userDto);
+        UserDto createdDto = userService.updateUser("login1",userDto);
         //then
         assertEquals("login1",createdDto.getLogin());
         verify(userRepository,times(1)).save(any());
@@ -119,8 +110,8 @@ class UserServiceImplTest {
     @Test
     void deleteUserById() {
         //when
-        userService.deleteUserById(1L);
+        userService.deleteUserByLogin("login");
         //then
-        verify(userRepository,times(1)).deleteById(anyLong());
+        verify(userRepository,times(1)).deleteByLogin(any());
     }
 }
