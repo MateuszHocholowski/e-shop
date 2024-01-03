@@ -1,6 +1,5 @@
 package com.orzechazo.eshop.domain.dto;
 
-import com.orzechazo.eshop.domain.Product;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -11,6 +10,7 @@ import java.util.List;
 @Builder
 public class OrderDto {
 
+    Long orderId;
     List<ProductDto> products;
     LocalDateTime orderDate;
     LocalDateTime admissionDate;

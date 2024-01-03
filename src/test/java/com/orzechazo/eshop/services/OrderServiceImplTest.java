@@ -4,6 +4,8 @@ import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
+import com.orzechazo.eshop.exceptions.BadRequestException;
+import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,17 +48,23 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void getOrderById() {
+    void getOrderByOrderId() {
         //given
         Order order1 = new Order();
         order1.setTotalPrice(PRICE);
-        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(order1));
+        order1.setOrderId(1L);
+        when(orderRepository.findByOrderId(anyLong())).thenReturn(Optional.of(order1));
         //when
-        OrderDto returnedDto = orderService.getOrderById(1L);
+        OrderDto returnedDto = orderService.getOrderByOrderId(1L);
         //then
         assertEquals(PRICE,returnedDto.getTotalPrice());
+        assertEquals(1L,returnedDto.getOrderId());
     }
-
+    @Test
+    void getOrderByOrderIdBadRequest() {
+        Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderByOrderId(6L));
+        assertEquals("Order with id: 6 doesn't exist in database.", exception.getMessage());
+    }
     @Test
     void getOrdersByUser() {
         //given
@@ -95,13 +103,13 @@ class OrderServiceImplTest {
     void createOrderExistingOrder() {
         //given
         Order order1 = new Order();
-        order1.setTotalPrice(PRICE);
-        OrderDto orderDto = OrderDto.builder().totalPrice(PRICE).build();
-        when(orderRepository.findAll()).thenReturn(List.of(order1));
+        order1.setOrderId(5L);
+        OrderDto orderDto = OrderDto.builder().orderId(5L).build();
+        when(orderRepository.findByOrderId(anyLong())).thenReturn(Optional.of(order1));
         //when
-        OrderDto createdDto = orderService.createOrder(orderDto);
+        Exception exception = assertThrows(BadRequestException.class,() -> orderService.createOrder(orderDto));
         //then
-        assertNull(createdDto);
+        assertEquals("Order: 5 is already in database.",exception.getMessage());
         verify(orderRepository,times(0)).save(any());
     }
 
@@ -121,7 +129,7 @@ class OrderServiceImplTest {
     @Test
     void deleteOrderById() {
         //when
-        orderService.deleteOrderById(1L);
+        orderService.deleteOrderByOrderId(1L);
         //then
         verify(orderRepository,times(1)).deleteById(anyLong());
     }

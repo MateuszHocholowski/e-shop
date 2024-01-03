@@ -3,7 +3,6 @@ package com.orzechazo.eshop.mappers;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
-import com.orzechazo.eshop.domain.dto.ProductDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +22,7 @@ class OrderMapperTest {
         //given
         Order expectedOrder = new Order();
         expectedOrder.setOrderDate(DATE);
-        expectedOrder.setId(1L);
+        expectedOrder.setOrderId(1L);
         expectedOrder.setTotalPrice(new BigDecimal("12"));
         expectedOrder.setPaymentDate(DATE);
         expectedOrder.setAdmissionDate(DATE);
@@ -32,6 +31,7 @@ class OrderMapperTest {
         expectedOrder.setProducts(new ArrayList<>());
 
         OrderDto orderDto = OrderDto.builder()
+                .orderId(1L)
                 .orderDate(DATE)
                 .totalPrice(new BigDecimal("12"))
                 .paymentDate(DATE)
@@ -51,7 +51,7 @@ class OrderMapperTest {
         //given
         Order expectedOrder = new Order();
         expectedOrder.setOrderDate(DATE);
-        expectedOrder.setId(1L);
+        expectedOrder.setOrderId(1L);
         expectedOrder.setTotalPrice(new BigDecimal("12"));
         expectedOrder.setPaymentDate(DATE);
         expectedOrder.setAdmissionDate(DATE);
@@ -60,6 +60,7 @@ class OrderMapperTest {
         expectedOrder.setProducts(new ArrayList<>());
 
         OrderDto orderDto = OrderDto.builder()
+                .orderId(1L)
                 .orderDate(DATE)
                 .totalPrice(new BigDecimal("13"))
                 .paymentDate(DATE)
@@ -78,7 +79,7 @@ class OrderMapperTest {
         //given
         Order order = new Order();
         order.setOrderDate(DATE);
-        order.setId(1L);
+        order.setOrderId(1L);
         order.setTotalPrice(new BigDecimal("12"));
         order.setPaymentDate(DATE);
         order.setAdmissionDate(DATE);
@@ -87,6 +88,7 @@ class OrderMapperTest {
         order.setProducts(new ArrayList<>());
 
         OrderDto expectedDto = OrderDto.builder()
+                .orderId(1L)
                 .orderDate(DATE)
                 .totalPrice(new BigDecimal("12"))
                 .paymentDate(DATE)
@@ -106,7 +108,7 @@ class OrderMapperTest {
         //given
         Order order = new Order();
         order.setOrderDate(DATE);
-        order.setId(1L);
+        order.setOrderId(1L);
         order.setTotalPrice(new BigDecimal("12"));
         order.setPaymentDate(DATE);
         order.setAdmissionDate(DATE);
@@ -115,6 +117,7 @@ class OrderMapperTest {
         order.setProducts(new ArrayList<>());
 
         OrderDto expectedDto = OrderDto.builder()
+                .orderId(1L)
                 .orderDate(DATE)
                 .totalPrice(new BigDecimal("13"))
                 .paymentDate(DATE)

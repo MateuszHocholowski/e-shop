@@ -3,6 +3,8 @@ package com.orzechazo.eshop.services;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
+import com.orzechazo.eshop.exceptions.BadRequestException;
+import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.OrderMapper;
 import com.orzechazo.eshop.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,10 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public OrderDto getOrderById(Long id) {
-        return orderMapper.orderToOrderDto(orderRepository.findById(id).orElseThrow(RuntimeException::new));
+    public OrderDto getOrderByOrderId(Long orderId) {
+        return orderMapper.orderToOrderDto(orderRepository.findByOrderId(orderId)
+                .orElseThrow(()-> new ResourceNotFoundException("Order with id: " + orderId
+                        + " doesn't exist in database.")));
     }
 
     @Override
@@ -42,28 +46,26 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         Order newOrder = orderMapper.orderDtoToOrder(orderDto);
-        if(!orderRepository.findAll().contains(newOrder)) {
+        if(orderRepository.findByOrderId(orderDto.getOrderId()).isEmpty()) {
             return saveOrderAndReturnDto(newOrder);
         } else {
-            System.out.println("That order is already in database");
+            throw new BadRequestException("Order: " + orderDto.getOrderId() + " is already in database.");
         }
-        return null;
     }
 
     @Override
-    public OrderDto updateOrder(Long id, OrderDto orderDto) {
+    public OrderDto updateOrder(Long orderId, OrderDto orderDto) {
         Order updateOrder = orderMapper.orderDtoToOrder(orderDto);
-        updateOrder.setId(id);
+        updateOrder.setOrderId(orderId);
         return saveOrderAndReturnDto(updateOrder);
     }
 
-    @Override
-    public OrderDto saveOrderAndReturnDto(Order order) {
+    private OrderDto saveOrderAndReturnDto(Order order) {
         return orderMapper.orderToOrderDto(orderRepository.save(order));
     }
 
     @Override
-    public void deleteOrderById(Long id) {
+    public void deleteOrderByOrderId(Long id) {
         orderRepository.deleteById(id);
     }
 }
