@@ -14,10 +14,12 @@ import java.util.List;
 @Entity
 public class Basket extends BaseEntity{
 
+    @Column(unique = true)
+    private Long basketId;
     @OneToMany(mappedBy = "basket")
-    List<Product> products;
+    private List<Product> products;
     @OneToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
-    User user;
-    BigDecimal totalPrice;
+    private User user;
+    private BigDecimal totalPrice;
 
 }
