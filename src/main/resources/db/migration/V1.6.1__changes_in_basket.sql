@@ -1,2 +1,2 @@
 ALTER TABLE BASKETS
-ADD COLUMN BASKET_ID bigint not null;
+ADD COLUMN BASKET_ID bigint unique;

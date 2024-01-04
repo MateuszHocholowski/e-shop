@@ -1,7 +1,6 @@
 package com.orzechazo.eshop.domain.dto;
 
 import lombok.*;
-import lombok.experimental.NonFinal;
 
 import java.math.BigDecimal;
 import java.util.List;

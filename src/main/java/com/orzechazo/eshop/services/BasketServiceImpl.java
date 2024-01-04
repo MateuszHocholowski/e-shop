@@ -28,6 +28,7 @@ public class BasketServiceImpl implements BasketService{
         if (newBasket == null) {
             newBasket = new Basket();
         }
+        Basket.createBasketId(newBasket);
         return saveBasketAndReturnDto(newBasket);
     }
 
