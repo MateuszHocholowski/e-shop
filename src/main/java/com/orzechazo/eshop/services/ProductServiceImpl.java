@@ -28,11 +28,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductByProductId(Long productId) {
-        Product returnedProduct = productRepository.findByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with id: " + productId
+    public ProductDto getProductDtoByName(String productName) {
+        return productMapper.productToProductDto(getProductByName(productName));
+    }
+    private Product getProductByName(String productName) {
+        return productRepository.findByName(productName)
+                .orElseThrow(() -> new ResourceNotFoundException("Product: " + productName
                         + " doesn't exist in database."));
-        return productMapper.productToProductDto(returnedProduct);
     }
 
     @Override
@@ -46,9 +48,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(Long productId, ProductDto productDto) {
+    public ProductDto updateProduct(String productName, ProductDto productDto) {
+        Product currentProduct = getProductByName(productName);
         Product productToUpdate = productMapper.productDtoToProduct(productDto);
-        productToUpdate.setProductId(productId);
+        if (productToUpdate.getName() == null) {
+            productToUpdate.setName(productName);
+        }
+        productToUpdate.setId(currentProduct.getId());
         return saveProductAndReturnDto(productToUpdate);
     }
 
@@ -57,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductByProductId(Long id) {
-        productRepository.deleteByProductId(id);
+    public void deleteProductByProductName(String productName) {
+        productRepository.deleteByName(productName);
     }
 }

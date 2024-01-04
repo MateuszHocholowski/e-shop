@@ -21,7 +21,6 @@ class ProductMapperTest {
         product.setDescription("testDescription");
         product.setGrossPrice(new BigDecimal("2"));
         product.setNetPrice(new BigDecimal("1.5"));
-        product.setProductId(1L);
         product.setImage(new byte[0]);
         //when
         ProductDto mappedDto = mapper.productToProductDto(product);
@@ -32,7 +31,6 @@ class ProductMapperTest {
         assertEquals(5,mappedDto.getAmount());
         assertEquals(new BigDecimal("1.5"),mappedDto.getNetPrice());
         assertEquals(new BigDecimal("2"),mappedDto.getGrossPrice());
-        assertEquals(1L,mappedDto.getProductId());
         assertNotNull(mappedDto.getImage());
     }
 

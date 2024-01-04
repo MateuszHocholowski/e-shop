@@ -16,8 +16,7 @@ import java.math.BigDecimal;
 @Entity
 public class Product extends BaseEntity {
 
-    @Column(unique = true)
-    private Long productId;
+    @Column(name = "PRODUCT_NAME", unique = true)
     private String name;
     private BigDecimal netPrice;
     private BigDecimal grossPrice;

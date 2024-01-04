@@ -30,10 +30,8 @@ class ProductServiceImplTest {
     @Test
     void getAllProducts() {
         Product product1 = new Product();
-        product1.setProductId(1L);
         product1.setName("test1");
         Product product2 = new Product();
-        product2.setProductId(2L);
         product2.setName("test2");
         List<Product> products = List.of(product1,product2);
         when(productRepository.findAll()).thenReturn(products);
@@ -41,30 +39,29 @@ class ProductServiceImplTest {
         List<ProductDto> returnedDtos = productService.getAllProducts();
         //then
         assertEquals(2,returnedDtos.size());
-        assertEquals(1L,returnedDtos.get(0).getProductId());
         assertEquals("test2",returnedDtos.get(1).getName());
     }
 
     @Test
-    void getProductByProductId() {
+    void getProductByProductName() {
         //given
         Product product = new Product();
-        product.setProductId(4L);
+        product.setName("testName");
         product.setAmount(6);
-        when(productRepository.findByProductId(anyLong())).thenReturn(Optional.of(product));
+        when(productRepository.findByName(any())).thenReturn(Optional.of(product));
         //when
-        ProductDto returnedDto = productService.getProductByProductId(4L);
+        ProductDto returnedDto = productService.getProductDtoByName("testName");
         //then
         assertEquals(6,returnedDto.getAmount());
-        assertEquals(4L,returnedDto.getProductId());
+        assertEquals("testName",returnedDto.getName());
     }
     @Test
-    void getProductByProductIdBadRequest() {
+    void getProductByProductNameBadRequest() {
         //when
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> productService.getProductByProductId(4L));
+                () -> productService.getProductDtoByName("testName"));
         //then
-        assertEquals("Product with id: 4 doesn't exist in database.",exception.getMessage());
+        assertEquals("Product: testName doesn't exist in database.",exception.getMessage());
     }
 
     @Test
@@ -72,14 +69,12 @@ class ProductServiceImplTest {
         //given
         ProductDto productDto = ProductDto.builder().name("testName").build();
         Product product = new Product();
-        product.setProductId(1L);
         product.setName("testName");
         when(productRepository.save(any())).thenReturn(product);
         //when
         ProductDto returnedDto = productService.createProduct(productDto);
         //then
         assertEquals("testName",returnedDto.getName());
-        assertEquals(1L,returnedDto.getProductId());
         verify(productRepository,times(1)).save(any());
     }
 
@@ -102,8 +97,9 @@ class ProductServiceImplTest {
         product.setId(1L);
         product.setName("testName");
         when(productRepository.save(any())).thenReturn(product);
+        when(productRepository.findByName(any())).thenReturn(Optional.of(product));
         //when
-        ProductDto returnedDto = productService.updateProduct(1L, productDto);
+        ProductDto returnedDto = productService.updateProduct("testName", productDto);
         //then
         assertEquals("testName",returnedDto.getName());
         verify(productRepository,times(1)).save(any());
@@ -112,8 +108,8 @@ class ProductServiceImplTest {
     @Test
     void deleteProduct() {
         //when
-        productService.deleteProductByProductId(1L);
+        productService.deleteProductByProductName("testName");
         //then
-        verify(productRepository,times(1)).deleteByProductId(any());
+        verify(productRepository,times(1)).deleteByName(any());
     }
 }
