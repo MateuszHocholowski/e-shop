@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 public class User extends BaseEntity{
 
+    @Column(unique = true)
     private String login;
     private String password;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
