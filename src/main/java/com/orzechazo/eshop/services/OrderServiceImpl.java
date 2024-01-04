@@ -40,7 +40,7 @@ public class OrderServiceImpl implements OrderService{
         return orderRepository.findAll().stream()
                 .map(orderMapper::orderToOrderDto)
                 .filter(productDto -> productDto.getUser().equals(userDto))
-                .toList();
+                .toList(); //todo change the method to improve performance
     }
 
     @Override
