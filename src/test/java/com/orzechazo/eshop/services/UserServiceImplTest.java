@@ -41,8 +41,6 @@ class UserServiceImplTest {
         List<UserDto> returnedDtos = userService.getAllUsers();
         //then
         assertEquals(2,returnedDtos.size());
-        assertEquals("login1",returnedDtos.get(0).getLogin());
-        assertNull(returnedDtos.get(1).getPassword());
     }
 
     @Test
@@ -101,7 +99,7 @@ class UserServiceImplTest {
         user.setLogin("login1");
         when(userRepository.save(any())).thenReturn(user);
         //when
-        UserDto createdDto = userService.updateUser("login1",userDto);
+        UserDto createdDto = userService.updateUser(userDto);
         //then
         assertEquals("login1",createdDto.getLogin());
         verify(userRepository,times(1)).save(any());

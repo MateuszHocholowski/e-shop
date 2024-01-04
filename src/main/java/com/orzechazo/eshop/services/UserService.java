@@ -9,7 +9,7 @@ public interface UserService {
     List<UserDto> getAllUsers();
     UserDto getUserByLogin(String login) throws BadRequestException;
     UserDto createUser(UserDto userDto) throws BadRequestException;
-    UserDto updateUser(String login, UserDto userDto);
+    UserDto updateUser(UserDto userDto);
     void deleteUserByLogin(String login);
 
 }
