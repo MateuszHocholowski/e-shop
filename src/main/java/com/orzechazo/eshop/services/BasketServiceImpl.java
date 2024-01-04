@@ -4,7 +4,6 @@ import com.orzechazo.eshop.domain.Basket;
 import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.BasketMapper;
-import com.orzechazo.eshop.mappers.UserMapper;
 import com.orzechazo.eshop.repositories.BasketRepository;
 import org.springframework.stereotype.Service;
 
