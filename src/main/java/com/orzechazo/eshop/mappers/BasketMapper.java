@@ -12,6 +12,5 @@ public interface BasketMapper {
     BasketMapper INSTANCE = Mappers.getMapper(BasketMapper.class);
 
     Basket basketDtoToBasket(BasketDto basketDto);
-    @Mapping(target = "user",ignore = true)
     BasketDto basketToBasketDto(Basket basket);
 }

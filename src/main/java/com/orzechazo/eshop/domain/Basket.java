@@ -18,8 +18,6 @@ public class Basket extends BaseEntity{
     private Long basketId;
     @OneToMany(mappedBy = "basket")
     private List<Product> products;
-    @OneToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
-    private User user;
     private BigDecimal totalPrice;
 
 }
