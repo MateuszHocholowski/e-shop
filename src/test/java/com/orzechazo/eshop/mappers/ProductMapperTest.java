@@ -21,7 +21,6 @@ class ProductMapperTest {
         product.setDescription("testDescription");
         product.setGrossPrice(new BigDecimal("2"));
         product.setNetPrice(new BigDecimal("1.5"));
-        product.setId(1L);
         product.setImage(new byte[0]);
         //when
         ProductDto mappedDto = mapper.productToProductDto(product);
