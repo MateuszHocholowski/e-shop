@@ -14,7 +14,7 @@ public class ProductController {
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
-    @GetMapping({"","/"})
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ProductDto> getAllProducts() {
         return productService.getAllProducts();

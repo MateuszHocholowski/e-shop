@@ -40,6 +40,7 @@ class ProductControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
     }
+    private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     @Test
     void getAllProducts() throws Exception {
@@ -75,9 +76,8 @@ class ProductControllerTest {
     @Test
     void createProduct() throws Exception{
         ProductDto productDto = ProductDto.builder().name("test").build();
-        ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        when(productService.createProduct(any())).thenReturn(productDto);
 
+        when(productService.createProduct(any())).thenReturn(productDto);
         mockMvc.perform(put("/products/new")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(writer.writeValueAsString(productDto)))
@@ -88,9 +88,8 @@ class ProductControllerTest {
     @Test
     void updateProduct() throws Exception {
         ProductDto productDto = ProductDto.builder().name("test").build();
-        ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        when(productService.updateProduct(anyString(), any())).thenReturn(productDto);
 
+        when(productService.updateProduct(anyString(), any())).thenReturn(productDto);
         mockMvc.perform(post("/products/update/test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(writer.writeValueAsString(productDto)))
