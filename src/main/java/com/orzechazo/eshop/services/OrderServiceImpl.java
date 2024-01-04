@@ -3,7 +3,6 @@ package com.orzechazo.eshop.services;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
-import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.OrderMapper;
 import com.orzechazo.eshop.repositories.OrderRepository;
@@ -46,11 +45,8 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         Order newOrder = orderMapper.orderDtoToOrder(orderDto);
-        if(orderRepository.findByOrderId(orderDto.getOrderId()).isEmpty()) {
-            return saveOrderAndReturnDto(newOrder);
-        } else {
-            throw new BadRequestException("Order: " + orderDto.getOrderId() + " is already in database.");
-        }
+        Order.createOrderId(newOrder);
+        return saveOrderAndReturnDto(newOrder);
     }
 
     @Override

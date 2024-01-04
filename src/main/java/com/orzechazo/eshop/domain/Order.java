@@ -26,4 +26,15 @@ public class Order extends BaseEntity{
     private BigDecimal totalPrice;
     @ManyToOne
     private User user;
+    @Transient
+    private static long currentOrder = 0;
+
+    public static void createOrderId(Order order) {
+        LocalDateTime now = LocalDateTime.now();
+        if(order.orderId == null) {
+            String id = "2" + now.getYear() + now.getMonthValue() + now.getDayOfMonth() + now.getHour() + currentOrder;
+            currentOrder++;
+            order.orderId = Long.parseLong(id);
+        }
+    }
 }
