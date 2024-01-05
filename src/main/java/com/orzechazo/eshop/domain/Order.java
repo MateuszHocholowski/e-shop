@@ -1,10 +1,12 @@
 package com.orzechazo.eshop.domain;
 
+import com.orzechazo.eshop.exceptions.BadRequestException;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
@@ -32,9 +34,13 @@ public class Order extends BaseEntity{
     public static void createOrderId(Order order) {
         LocalDateTime now = LocalDateTime.now();
         if(order.orderId == null) {
-            String id = "2" + now.getYear() + now.getMonthValue() + now.getDayOfMonth() + now.getHour() + currentOrder;
+            String id = now.format(DateTimeFormatter.BASIC_ISO_DATE)
+                    + now.toLocalTime().toString().replaceAll(":","").substring(0,6)
+                    + currentOrder;
             currentOrder++;
             order.orderId = Long.parseLong(id);
+        } else {
+            throw new BadRequestException("Order already has an id: " + order.getOrderId());
         }
     }
 }
