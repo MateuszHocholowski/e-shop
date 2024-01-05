@@ -24,9 +24,6 @@ public class BasketServiceImpl implements BasketService{
     @Override
     public BasketDto createBasket(BasketDto basketDto) {
         Basket newBasket = basketMapper.basketDtoToBasket(basketDto);
-        if (newBasket == null) {
-            newBasket = new Basket();
-        }
         Basket.createBasketId(newBasket);
         return saveBasketAndReturnDto(newBasket);
     }
