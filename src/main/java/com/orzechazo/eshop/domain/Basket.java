@@ -1,5 +1,6 @@
 package com.orzechazo.eshop.domain;
 
+import com.orzechazo.eshop.exceptions.BadRequestException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,8 @@ public class Basket extends BaseEntity{
                     + now.getMonthValue() + now.getDayOfMonth();
             currentBasket++;
             basket.setBasketId(Long.parseLong(id));
+        } else {
+            throw new BadRequestException("Basket already has an id: " + basket.getBasketId());
         }
     }
 }
