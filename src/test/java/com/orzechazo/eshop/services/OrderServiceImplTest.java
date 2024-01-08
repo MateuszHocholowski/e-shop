@@ -4,6 +4,7 @@ import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
+import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.OrderRepository;
 import org.junit.jupiter.api.Test;
@@ -97,6 +98,13 @@ class OrderServiceImplTest {
         //then
         assertEquals(PRICE,createdDto.getTotalPrice());
         verify(orderRepository,times(1)).save(any());
+    }
+
+    @Test
+    void createOrderExistingId() {
+        Exception exception = assertThrows(BadRequestException.class,
+                () -> orderService.createOrder(OrderDto.builder().orderId(1L).build()));
+        assertEquals("Order already has an id: 1",exception.getMessage());
     }
 
     @Test

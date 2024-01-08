@@ -33,10 +33,9 @@ public class Order extends BaseEntity{
 
     public static void createOrderId(Order order) {
         LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         if(order.orderId == null) {
-            String id = now.format(DateTimeFormatter.BASIC_ISO_DATE)
-                    + now.toLocalTime().toString().replaceAll(":","").substring(0,6)
-                    + currentOrder;
+            String id = now.format(formatter) + currentOrder;
             currentOrder++;
             order.orderId = Long.parseLong(id);
         } else {
