@@ -34,7 +34,7 @@ public class UserController {
     }
     @PostMapping("/{login}/update")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto updateUser(@PathVariable String login, @RequestBody UserDto userDto) {
+    public UserDto updateUser(@RequestParam String login, @RequestBody UserDto userDto) {
         return userService.updateUser(userDto);
     }
     @DeleteMapping("/{login}/delete")
