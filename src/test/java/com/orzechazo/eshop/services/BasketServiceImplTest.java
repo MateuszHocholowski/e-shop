@@ -2,6 +2,7 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Basket;
 import com.orzechazo.eshop.domain.dto.BasketDto;
+import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ class BasketServiceImplTest {
     @Test
     void createBasket() {
         //given
-        BasketDto basketDto = BasketDto.builder().basketId(2L).build();
+        BasketDto basketDto = BasketDto.builder().build();
         Basket basket = new Basket();
         basket.setBasketId(2L);
         when(basketRepository.save(any())).thenReturn(basket);
@@ -55,6 +56,18 @@ class BasketServiceImplTest {
         //then
         assertEquals(2L,createdDto.getBasketId());
         verify(basketRepository,times(1)).save(any());
+    }
+
+    @Test
+    void createBasketNullId() {
+        BasketDto basketDto = BasketDto.builder().basketId(2L).build();
+        Basket basket = new Basket();
+        basket.setBasketId(2L);
+
+        Exception exception = assertThrows(BadRequestException.class,
+                () -> basketService.createBasket(basketDto));
+
+        assertEquals("Basket already has an id: 2",exception.getMessage());
     }
 
     @Test
