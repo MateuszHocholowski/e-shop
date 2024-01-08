@@ -1,9 +1,7 @@
 package com.orzechazo.eshop.mappers;
 
 import com.orzechazo.eshop.domain.Basket;
-import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.BasketDto;
-import com.orzechazo.eshop.domain.dto.UserDto;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -17,13 +15,12 @@ class BasketMapperTest {
     @Test
     void basketDtoToBasket() {
         Basket expectedBasket = new Basket();
-        expectedBasket.setId(1L);
+        expectedBasket.setBasketId(1L);
         expectedBasket.setProducts(new ArrayList<>());
         expectedBasket.setTotalPrice(new BigDecimal("12"));
-        expectedBasket.setUser(new User());
 
         BasketDto basketDto = BasketDto.builder()
-                .user(UserDto.builder().build())
+                .basketId(1L)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("12"))
                 .build();
@@ -36,13 +33,12 @@ class BasketMapperTest {
     void basketDtoToBasketNotEquals() {
         //given
         Basket expectedBasket = new Basket();
-        expectedBasket.setId(1L);
+        expectedBasket.setBasketId(1L);
         expectedBasket.setProducts(new ArrayList<>());
         expectedBasket.setTotalPrice(new BigDecimal("12"));
-        expectedBasket.setUser(new User());
 
         BasketDto basketDto = BasketDto.builder()
-                .user(UserDto.builder().build())
+                .basketId(1L)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("13"))
                 .build();
@@ -56,13 +52,12 @@ class BasketMapperTest {
     void basketToBasketDto() {
         //given
         Basket basket = new Basket();
-        basket.setId(1L);
+        basket.setBasketId(1L);
         basket.setProducts(new ArrayList<>());
         basket.setTotalPrice(new BigDecimal("12"));
-        basket.setUser(new User());
 
         BasketDto expectedDto = BasketDto.builder()
-                .user(UserDto.builder().build())
+                .basketId(1L)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("12"))
                 .build();
@@ -76,13 +71,12 @@ class BasketMapperTest {
     void basketToBasketDtoNotEquals() {
         //given
         Basket basket = new Basket();
-        basket.setId(1L);
+        basket.setBasketId(1L);
         basket.setProducts(new ArrayList<>());
         basket.setTotalPrice(new BigDecimal("12"));
-        basket.setUser(new User());
 
         BasketDto expectedDto = BasketDto.builder()
-                .user(UserDto.builder().build())
+                .basketId(1L)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("13"))
                 .build();

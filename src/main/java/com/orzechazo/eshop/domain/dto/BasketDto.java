@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public class BasketDto {
 
+    Long basketId;
     List<ProductDto> products;
-    UserDto user;
     BigDecimal totalPrice;
 }

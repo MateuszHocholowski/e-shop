@@ -1,10 +1,13 @@
 package com.orzechazo.eshop.domain;
 
+import com.orzechazo.eshop.exceptions.BadRequestException;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -14,10 +17,24 @@ import java.util.List;
 @Entity
 public class Basket extends BaseEntity{
 
+    @Column(unique = true)
+    private Long basketId;
     @OneToMany(mappedBy = "basket")
-    List<Product> products;
-    @OneToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
-    User user;
-    BigDecimal totalPrice;
+    private List<Product> products;
+    private BigDecimal totalPrice;
+    @Transient
+    private static long currentBasket = 0;
 
+    public static void createBasketId(Basket basket) {
+        LocalDate now = LocalDate.now();
+        Random random = new Random();
+        if (basket.getBasketId() == null) {
+            String id = String.valueOf(currentBasket) + random.nextInt(100) + now.getYear()
+                    + now.getMonthValue() + now.getDayOfMonth();
+            currentBasket++;
+            basket.setBasketId(Long.parseLong(id));
+        } else {
+            throw new BadRequestException("Basket already has an id: " + basket.getBasketId());
+        }
+    }
 }

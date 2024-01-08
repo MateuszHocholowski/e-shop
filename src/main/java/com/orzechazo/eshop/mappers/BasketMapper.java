@@ -9,7 +9,6 @@ import org.mapstruct.factory.Mappers;
 public interface BasketMapper {
 
     BasketMapper INSTANCE = Mappers.getMapper(BasketMapper.class);
-
     Basket basketDtoToBasket(BasketDto basketDto);
     BasketDto basketToBasketDto(Basket basket);
 }
