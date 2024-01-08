@@ -1,0 +1,2 @@
+ALTER table BASKETS MODIFY COLUMN BASKET_ID varchar(30) unique;
+ALTER table ORDERS MODIFY COLUMN ORDER_ID varchar(30) unique;
