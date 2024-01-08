@@ -19,12 +19,12 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
     private final static BigDecimal PRICE = new BigDecimal("13");
+    public static final String ORDER_ID = "1";
     @InjectMocks
     private OrderServiceImpl orderService;
     @Mock
@@ -52,18 +52,18 @@ class OrderServiceImplTest {
         //given
         Order order1 = new Order();
         order1.setTotalPrice(PRICE);
-        order1.setOrderId(1L);
-        when(orderRepository.findByOrderId(anyLong())).thenReturn(Optional.of(order1));
+        order1.setOrderId(ORDER_ID);
+        when(orderRepository.findByOrderId(any())).thenReturn(Optional.of(order1));
         //when
-        OrderDto returnedDto = orderService.getOrderByOrderId(1L);
+        OrderDto returnedDto = orderService.getOrderByOrderId(ORDER_ID);
         //then
         assertEquals(PRICE,returnedDto.getTotalPrice());
-        assertEquals(1L,returnedDto.getOrderId());
+        assertEquals(ORDER_ID,returnedDto.getOrderId());
     }
     @Test
     void getOrderByOrderIdBadRequest() {
-        Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderByOrderId(6L));
-        assertEquals("Order with id: 6 doesn't exist in database.", exception.getMessage());
+        Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderByOrderId(ORDER_ID));
+        assertEquals("Order with id: 1 doesn't exist in database.", exception.getMessage());
     }
     @Test
     void getOrdersByUser() {
@@ -103,7 +103,7 @@ class OrderServiceImplTest {
     @Test
     void createOrderExistingId() {
         Exception exception = assertThrows(BadRequestException.class,
-                () -> orderService.createOrder(OrderDto.builder().orderId(1L).build()));
+                () -> orderService.createOrder(OrderDto.builder().orderId(ORDER_ID).build()));
         assertEquals("Order already has an id: 1",exception.getMessage());
     }
 
@@ -114,17 +114,17 @@ class OrderServiceImplTest {
         order1.setTotalPrice(PRICE);
         when(orderRepository.save(any())).thenReturn(order1);
         //when
-        OrderDto updatedDto = orderService.updateOrder(1L, OrderDto.builder().build());
+        OrderDto updatedDto = orderService.updateOrder(ORDER_ID, OrderDto.builder().build());
         //then
         assertEquals(PRICE,updatedDto.getTotalPrice());
         verify(orderRepository,times(1)).save(any());
     }
 
     @Test
-    void deleteOrderById() {
+    void deleteOrderByOrderId() {
         //when
-        orderService.deleteOrderByOrderId(1L);
+        orderService.deleteOrderByOrderId(ORDER_ID);
         //then
-        verify(orderRepository,times(1)).deleteById(anyLong());
+        verify(orderRepository,times(1)).deleteByOrderId(any());
     }
 }

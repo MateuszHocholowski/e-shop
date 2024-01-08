@@ -11,16 +11,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BasketMapperTest {
 
+    public static final String BASKET_ID = "1";
     BasketMapper mapper = BasketMapper.INSTANCE;
     @Test
     void basketDtoToBasket() {
         Basket expectedBasket = new Basket();
-        expectedBasket.setBasketId(1L);
+        expectedBasket.setBasketId(BASKET_ID);
         expectedBasket.setProducts(new ArrayList<>());
         expectedBasket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto basketDto = BasketDto.builder()
-                .basketId(1L)
+                .basketId(BASKET_ID)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("12"))
                 .build();
@@ -33,12 +34,12 @@ class BasketMapperTest {
     void basketDtoToBasketNotEquals() {
         //given
         Basket expectedBasket = new Basket();
-        expectedBasket.setBasketId(1L);
+        expectedBasket.setBasketId(BASKET_ID);
         expectedBasket.setProducts(new ArrayList<>());
         expectedBasket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto basketDto = BasketDto.builder()
-                .basketId(1L)
+                .basketId(BASKET_ID)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("13"))
                 .build();
@@ -52,12 +53,12 @@ class BasketMapperTest {
     void basketToBasketDto() {
         //given
         Basket basket = new Basket();
-        basket.setBasketId(1L);
+        basket.setBasketId(BASKET_ID);
         basket.setProducts(new ArrayList<>());
         basket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto expectedDto = BasketDto.builder()
-                .basketId(1L)
+                .basketId(BASKET_ID)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("12"))
                 .build();
@@ -71,12 +72,12 @@ class BasketMapperTest {
     void basketToBasketDtoNotEquals() {
         //given
         Basket basket = new Basket();
-        basket.setBasketId(1L);
+        basket.setBasketId(BASKET_ID);
         basket.setProducts(new ArrayList<>());
         basket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto expectedDto = BasketDto.builder()
-                .basketId(1L)
+                .basketId(BASKET_ID)
                 .products(new ArrayList<>())
                 .totalPrice(new BigDecimal("13"))
                 .build();

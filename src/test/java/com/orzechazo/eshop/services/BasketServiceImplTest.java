@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BasketServiceImplTest {
 
+    public static final String BASKET_ID = "1";
     @InjectMocks
     private BasketServiceImpl basketService;
     @Mock
@@ -28,20 +29,20 @@ class BasketServiceImplTest {
     void getBasketByBasketId() {
         //given
         Basket basket = new Basket();
-        basket.setBasketId(1L);
+        basket.setBasketId(BASKET_ID);
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         //when
-        BasketDto returnedDto = basketService.getBasketByBasketId(1L);
+        BasketDto returnedDto = basketService.getBasketByBasketId(BASKET_ID);
         //then
-        assertEquals(1L,returnedDto.getBasketId());
+        assertEquals(BASKET_ID,returnedDto.getBasketId());
     }
 
     @Test
     void getBasketByBasketIdNotFound() {
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> basketService.getBasketByBasketId(11L));
+                () -> basketService.getBasketByBasketId(BASKET_ID));
         //then
-        assertEquals("Basket: 11 doesn't exist in database",exception.getMessage());
+        assertEquals("Basket: 1 doesn't exist in database",exception.getMessage());
     }
 
     @Test
@@ -49,44 +50,44 @@ class BasketServiceImplTest {
         //given
         BasketDto basketDto = BasketDto.builder().build();
         Basket basket = new Basket();
-        basket.setBasketId(2L);
+        basket.setBasketId(BASKET_ID);
         when(basketRepository.save(any())).thenReturn(basket);
         //when
         BasketDto createdDto = basketService.createBasket(basketDto);
         //then
-        assertEquals(2L,createdDto.getBasketId());
+        assertEquals(BASKET_ID,createdDto.getBasketId());
         verify(basketRepository,times(1)).save(any());
     }
 
     @Test
     void createBasketNullId() {
-        BasketDto basketDto = BasketDto.builder().basketId(2L).build();
+        BasketDto basketDto = BasketDto.builder().basketId(BASKET_ID).build();
         Basket basket = new Basket();
-        basket.setBasketId(2L);
+        basket.setBasketId(BASKET_ID);
 
         Exception exception = assertThrows(BadRequestException.class,
                 () -> basketService.createBasket(basketDto));
 
-        assertEquals("Basket already has an id: 2",exception.getMessage());
+        assertEquals("Basket already has an id: 1",exception.getMessage());
     }
 
     @Test
     void updateBasketById() {
-        BasketDto basketDto = BasketDto.builder().basketId(2L).build();
+        BasketDto basketDto = BasketDto.builder().basketId(BASKET_ID).build();
         Basket basket = new Basket();
-        basket.setBasketId(2L);
+        basket.setBasketId(BASKET_ID);
         when(basketRepository.save(any())).thenReturn(basket);
         //when
         BasketDto updatedDto = basketService.updateBasket(basketDto);
         //then
-        assertEquals(2L,updatedDto.getBasketId());
+        assertEquals(BASKET_ID,updatedDto.getBasketId());
         verify(basketRepository,times(1)).save(any());
     }
 
     @Test
     void deleteBasket() {
         //when
-        basketService.deleteBasket(3L);
+        basketService.deleteBasket(BASKET_ID);
         //then
         verify(basketRepository,times(1)).deleteByBasketId(any());
     }

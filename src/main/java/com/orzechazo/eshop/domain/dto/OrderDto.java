@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 public class OrderDto {
 
-    Long orderId;
+    String orderId;
     List<ProductDto> products;
     LocalDateTime orderDate;
     LocalDateTime admissionDate;

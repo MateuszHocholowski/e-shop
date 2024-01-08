@@ -28,7 +28,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public OrderDto getOrderByOrderId(Long orderId) {
+    public OrderDto getOrderByOrderId(String orderId) {
         return orderMapper.orderToOrderDto(orderRepository.findByOrderId(orderId)
                 .orElseThrow(()-> new ResourceNotFoundException("Order with id: " + orderId
                         + " doesn't exist in database.")));
@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public OrderDto updateOrder(Long orderId, OrderDto orderDto) {
+    public OrderDto updateOrder(String orderId, OrderDto orderDto) {
         Order updateOrder = orderMapper.orderDtoToOrder(orderDto);
         updateOrder.setOrderId(orderId);
         return saveOrderAndReturnDto(updateOrder);
@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public void deleteOrderByOrderId(Long id) {
-        orderRepository.deleteById(id);
+    public void deleteOrderByOrderId(String orderId) {
+        orderRepository.deleteByOrderId(orderId);
     }
 }
