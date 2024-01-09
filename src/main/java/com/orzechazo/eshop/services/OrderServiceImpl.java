@@ -28,17 +28,15 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public OrderDto getOrderByOrderId(String orderId) {
-        return orderMapper.orderToOrderDto(orderRepository.findByOrderId(orderId)
-                .orElseThrow(()-> new ResourceNotFoundException("Order with id: " + orderId
-                        + " doesn't exist in database.")));
+    public OrderDto getOrderDtoByOrderId(String orderId) {
+        return orderMapper.orderToOrderDto(getOrderByOrderId(orderId));
     }
 
     @Override
     public List<OrderDto> getOrdersByUser(UserDto userDto) {
         return orderRepository.findAll().stream()
                 .map(orderMapper::orderToOrderDto)
-                .filter(productDto -> productDto.getUser().equals(userDto))
+                .filter(orderDto -> orderDto.getUser().equals(userDto))
                 .toList(); //todo change the method to improve performance
     }
 
@@ -51,8 +49,9 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public OrderDto updateOrder(String orderId, OrderDto orderDto) {
+        Order currentOrder = getOrderByOrderId(orderId);
         Order updateOrder = orderMapper.orderDtoToOrder(orderDto);
-        updateOrder.setOrderId(orderId);
+        updateOrder.setId(currentOrder.getId());
         return saveOrderAndReturnDto(updateOrder);
     }
 
@@ -63,5 +62,9 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public void deleteOrderByOrderId(String orderId) {
         orderRepository.deleteByOrderId(orderId);
+    }
+    private Order getOrderByOrderId(String orderId) {
+        return orderRepository.findByOrderId(orderId).orElseThrow(
+                ()-> new ResourceNotFoundException("Order with id: " + orderId + " doesn't exist in database."));
     }
 }

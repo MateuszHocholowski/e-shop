@@ -55,14 +55,14 @@ class OrderServiceImplTest {
         order1.setOrderId(ORDER_ID);
         when(orderRepository.findByOrderId(any())).thenReturn(Optional.of(order1));
         //when
-        OrderDto returnedDto = orderService.getOrderByOrderId(ORDER_ID);
+        OrderDto returnedDto = orderService.getOrderDtoByOrderId(ORDER_ID);
         //then
         assertEquals(PRICE,returnedDto.getTotalPrice());
         assertEquals(ORDER_ID,returnedDto.getOrderId());
     }
     @Test
     void getOrderByOrderIdBadRequest() {
-        Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderByOrderId(ORDER_ID));
+        Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderDtoByOrderId(ORDER_ID));
         assertEquals("Order with id: 1 doesn't exist in database.", exception.getMessage());
     }
     @Test
@@ -70,6 +70,7 @@ class OrderServiceImplTest {
         //given
         User user = new User();
         user.setLogin("login1");
+        user.setPassword("password1");
         UserDto userDto = UserDto.builder().login("login1").build();
         Order order1 = new Order();
         order1.setUser(user);
@@ -85,6 +86,7 @@ class OrderServiceImplTest {
         assertEquals(2,returnedDtos.size());
         assertEquals(PRICE,returnedDtos.get(0).getTotalPrice());
         assertEquals("login1",returnedDtos.get(1).getUser().getLogin());
+        assertNull(returnedDtos.get(0).getUser().getPassword());
     }
 
     @Test
@@ -112,6 +114,7 @@ class OrderServiceImplTest {
         //given
         Order order1 = new Order();
         order1.setTotalPrice(PRICE);
+        when(orderRepository.findByOrderId(any())).thenReturn(Optional.of(order1));
         when(orderRepository.save(any())).thenReturn(order1);
         //when
         OrderDto updatedDto = orderService.updateOrder(ORDER_ID, OrderDto.builder().build());
