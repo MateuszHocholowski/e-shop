@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Entity
+@Entity(name = "USERS")
 public class User extends BaseEntity{
 
     @Column(unique = true)

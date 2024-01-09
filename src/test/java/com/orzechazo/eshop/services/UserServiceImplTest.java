@@ -51,15 +51,15 @@ class UserServiceImplTest {
         user1.setLogin("login1");
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user1));
         //when
-        UserDto returnedDto = userService.getUserByLogin("login1");
+        UserDto returnedDto = userService.getUserDtoByLogin("login1");
         //then
         assertEquals("login1",returnedDto.getLogin());
     }
 
     @Test
     void getUserByLoginNotFound() {
-        Exception exception = assertThrows(ResourceNotFoundException.class,() -> userService.getUserByLogin("test"));
-        assertEquals("User: test doesn't exist in database",exception.getMessage());
+        Exception exception = assertThrows(ResourceNotFoundException.class,() -> userService.getUserDtoByLogin("test"));
+        assertEquals("User: test doesn't exist in database.",exception.getMessage());
     }
 
     @Test
@@ -97,12 +97,23 @@ class UserServiceImplTest {
         User user = new User();
         user.setId(1L);
         user.setLogin("login1");
+        when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
         when(userRepository.save(any())).thenReturn(user);
         //when
         UserDto createdDto = userService.updateUser(userDto);
         //then
         assertEquals("login1",createdDto.getLogin());
         verify(userRepository,times(1)).save(any());
+    }
+    @Test
+    void updateUserBadRequest() {
+        //given
+        UserDto userDto = UserDto.builder().login("login1").build();
+        //when
+        Exception exception = assertThrows(ResourceNotFoundException.class,() -> userService.updateUser(userDto));
+        //then
+        assertEquals("User: login1 doesn't exist in database.",exception.getMessage());
+        verify(userRepository,times(0)).save(any());
     }
 
     @Test

@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping("/{login}")
     @ResponseStatus(HttpStatus.OK)
     public UserDto getUserByLogin(@PathVariable String login) {
-        return userService.getUserByLogin(login);
+        return userService.getUserDtoByLogin(login);
     }
     @PutMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)

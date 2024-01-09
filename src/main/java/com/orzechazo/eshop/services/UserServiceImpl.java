@@ -27,9 +27,8 @@ public class UserServiceImpl implements UserService{
                 .toList();
     }
     @Override
-    public UserDto getUserByLogin(String login) {
-        return userMapper.userToUserDto(userRepository.findByLogin(login)
-                .orElseThrow(() -> new ResourceNotFoundException("User: " + login + " doesn't exist in database")));
+    public UserDto getUserDtoByLogin(String login) {
+        return userMapper.userToUserDto(getUserByLogin(login));
     }
 
     @Override
@@ -44,7 +43,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDto updateUser(UserDto userDto) {
+        User currentUser = getUserByLogin(userDto.getLogin());
         User updateUser = userMapper.userDtoToUser(userDto);
+        updateUser.setId(currentUser.getId());
         return saveUserAndReturnDto(updateUser);
     }
 
@@ -55,5 +56,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUserByLogin(String login) {
         userRepository.deleteByLogin(login);
+    }
+    private User getUserByLogin(String login) {
+        return userRepository.findByLogin(login).orElseThrow(
+                () -> new ResourceNotFoundException("User: " + login + " doesn't exist in database."));
     }
 }
