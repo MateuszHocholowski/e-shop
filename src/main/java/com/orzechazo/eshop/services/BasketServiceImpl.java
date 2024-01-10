@@ -16,9 +16,8 @@ public class BasketServiceImpl implements BasketService{
         this.basketRepository = basketRepository;
     }
     @Override
-    public BasketDto getBasketByBasketId(String basketId) {
-        return basketMapper.basketToBasketDto(basketRepository.findByBasketId(basketId)
-                .orElseThrow(() -> new ResourceNotFoundException("Basket: " + basketId + " doesn't exist in database")));
+    public BasketDto getBasketDtoByBasketId(String basketId) {
+        return basketMapper.basketToBasketDto(getBasketByBasketId(basketId));
     }
 
     @Override
@@ -30,7 +29,9 @@ public class BasketServiceImpl implements BasketService{
 
     @Override
     public BasketDto updateBasket(BasketDto basketDto) {
+        Basket currentBasket = getBasketByBasketId(basketDto.getBasketId());
         Basket updateBasket = basketMapper.basketDtoToBasket(basketDto);
+        updateBasket.setId(currentBasket.getId());
         return saveBasketAndReturnDto(updateBasket);
     }
 
@@ -41,6 +42,10 @@ public class BasketServiceImpl implements BasketService{
     @Override
     public void deleteBasket(String basketId) {
         basketRepository.deleteByBasketId(basketId);
+    }
+    private Basket getBasketByBasketId(String basketId) {
+        return basketRepository.findByBasketId(basketId).orElseThrow(() -> new ResourceNotFoundException(
+                "Basket: " + basketId + " doesn't exist in database"));
     }
 
 }
