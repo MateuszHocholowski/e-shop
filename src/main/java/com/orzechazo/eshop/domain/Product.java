@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Entity
+@Entity(name = "PRODUCTS")
 public class Product extends BaseEntity {
 
     @Column(name = "PRODUCT_NAME", unique = true)
