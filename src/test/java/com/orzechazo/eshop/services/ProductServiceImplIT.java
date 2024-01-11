@@ -21,10 +21,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ProductServiceImplIT {
-
     @Autowired
     private ProductRepository productRepository;
     private ProductService productService;
+    private int DB_PRODUCT_COUNT;
+    private static final String DB_PRODUCT_NAME = BootstrapProduct.DB_PRODUCT_NAME;
 
     @BeforeEach()
     void setUp() {
@@ -32,106 +33,116 @@ public class ProductServiceImplIT {
         bootstrapProduct.loadData();
 
         productService = new ProductServiceImpl(productRepository);
+        DB_PRODUCT_COUNT = bootstrapProduct.getProducts().size();
     }
 
     @Test
     void getAllProducts() {
-        long productCount = productRepository.count();
         List<ProductDto> productDtos = productService.getAllProducts();
 
-        assertEquals(productCount,productDtos.size());
-        assertEquals("product1", productDtos.get(0).getName());
-        assertEquals(7,productDtos.get(1).getAmount());
-        assertEquals(new BigDecimal("5.7"),productDtos.get(2).getNetPrice());
+        assertEquals(DB_PRODUCT_COUNT,productDtos.size());
+        assertEquals(DB_PRODUCT_NAME, productDtos.get(0).getName());
+        assertNotNull(productDtos.get(DB_PRODUCT_COUNT-1));
     }
 
     @Test
     void getProductByProductName() {
         //given
-        ProductDto expectedDto = ProductDto.builder().name("product3").amount(12)
-                .netPrice(new BigDecimal("5.7")).grossPrice(new BigDecimal("2.2"))
-                .description("testDescription3").build();
+        ProductDto expectedDto = ProductDto.builder().name(DB_PRODUCT_NAME).amount(5)
+                .netPrice(new BigDecimal("1.5")).grossPrice(new BigDecimal("3.1"))
+                .description("testDescription1").build();
         //when
-        ProductDto returnedDto = productService.getProductDtoByName("product3");
+        ProductDto returnedDto = productService.getProductDtoByName(DB_PRODUCT_NAME);
         //then
         assertEquals(expectedDto,returnedDto);
     }
 
     @Test
-    void getProductByProductNameNotFound() {
+    void getProductByProductNameThatIsNotInDatabase() {
         //when
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> productService.getProductDtoByName("testName"));
+                () -> productService.getProductDtoByName("productNotExisting"));
         //then
-        assertEquals("Product: testName doesn't exist in database.",exception.getMessage());
+        assertEquals("Product: productNotExisting doesn't exist in database.",exception.getMessage());
     }
     @Test
-    void testCreateProduct() {
-        ProductDto newProduct = ProductDto.builder().name("test").amount(2)
+    void testCreateNewProduct() {
+        ProductDto newProduct = ProductDto.builder().name("newProduct").amount(2)
                 .netPrice(new BigDecimal("1")).grossPrice(new BigDecimal("2"))
                 .description("testDescription").build();
         //when
         ProductDto createdDto = productService.createProduct(newProduct);
         //then
         assertEquals(newProduct,createdDto);
+        assertEquals(DB_PRODUCT_COUNT+1, productRepository.count());
     }
 
     @Test
-    void testCreateProductExists() {
-        ProductDto newProduct = ProductDto.builder().name("product1").amount(2)
-                .netPrice(new BigDecimal("1")).grossPrice(new BigDecimal("2"))
-                .description("testDescription").build();
+    void testTryToCreateProductWhoseNameIsAlreadyInDatabase() {
+        ProductDto existingProduct = ProductDto.builder().name(DB_PRODUCT_NAME).amount(2)
+                .netPrice(new BigDecimal("13")).grossPrice(new BigDecimal("7"))
+                .build();
+        Exception exception = assertThrows(BadRequestException.class,
+                () -> productService.createProduct(existingProduct));
+        assertEquals("Product: " + DB_PRODUCT_NAME + " is already in database.",exception.getMessage());
+    }
+
+    @Test
+    void testTryToCreateTheSameProductTwice() {
+        ProductDto newProduct = ProductDto.builder().name("newProduct").build();
+        productService.createProduct(newProduct);
         Exception exception = assertThrows(BadRequestException.class,
                 () -> productService.createProduct(newProduct));
-        assertEquals("Product: product1 is already in database.",exception.getMessage());
+        assertEquals("Product: newProduct is already in database.",exception.getMessage());
     }
 
     @Test
     void testUpdateProduct() {
-        ProductDto productToUpdate = ProductDto.builder().name("product2").amount(10)
+        ProductDto productToUpdate = ProductDto.builder().name(DB_PRODUCT_NAME).amount(10)
                 .netPrice(new BigDecimal("2")).grossPrice(new BigDecimal("4"))
                 .description("newDescription").build();
 
-        ProductDto updatedProduct = productService
-                .updateProduct(productToUpdate.getName(), productToUpdate);
-        ProductDto expectedProduct = productService.getProductDtoByName(productToUpdate.getName());
+        productService.updateProduct(DB_PRODUCT_NAME, productToUpdate);
 
-        assertEquals(updatedProduct,productToUpdate);
-        assertEquals(expectedProduct,productToUpdate);
+        ProductDto updatedProduct = productService.getProductDtoByName(DB_PRODUCT_NAME);
+
+        assertEquals(new BigDecimal("2"),updatedProduct.getNetPrice());
+        assertEquals(new BigDecimal("4"),updatedProduct.getGrossPrice());
+        assertEquals(10,updatedProduct.getAmount());
+        assertEquals("newDescription",updatedProduct.getDescription());
+        assertEquals(DB_PRODUCT_COUNT,productRepository.count());
     }
 
     @Test
     void testUpdateProductNoName() {
-        ProductDto productToUpdate = ProductDto.builder().amount(10)
+        ProductDto productDtoWithoutNameField = ProductDto.builder().amount(10)
                 .netPrice(new BigDecimal("2")).grossPrice(new BigDecimal("4"))
                 .description("newDescription").build();
-        ProductDto updatedProduct1 = productService.
-                updateProduct("product1",productToUpdate);
-        ProductDto expectedProduct = productService.getProductDtoByName("product1");
 
-        assertEquals(expectedProduct,updatedProduct1);
+        Exception exception = assertThrows(BadRequestException.class,
+                () -> productService.updateProduct(DB_PRODUCT_NAME,productDtoWithoutNameField));
+        assertEquals("Please insert the name of the Product you want to update", exception.getMessage());
     }
 
     @Test
     void testUpdateProductDifferentName() {
         //given
-        ProductDto productToUpdate = ProductDto.builder().name("product4").amount(10)
+        ProductDto productToUpdate = ProductDto.builder().name("newProductName").amount(10)
                 .netPrice(new BigDecimal("2")).grossPrice(new BigDecimal("4"))
                 .description("newDescription").build();
         //when
-        productService.updateProduct("product1",productToUpdate);
+        productService.updateProduct(DB_PRODUCT_NAME,productToUpdate);
         //then
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> productService.getProductDtoByName("product1"));
-        assertEquals("Product: product1 doesn't exist in database.",exception.getMessage());
+                () -> productService.getProductDtoByName(DB_PRODUCT_NAME));
+        assertEquals("Product: "+ DB_PRODUCT_NAME + " doesn't exist in database.",exception.getMessage());
     }
 
     @Test
     void testDeleteProduct() {
-        long productCount = productRepository.count();
         //when
-        productService.deleteProductByProductName("product1");
+        productService.deleteProductByProductName(DB_PRODUCT_NAME);
         //then
-        assertEquals(productCount - 1,productService.getAllProducts().size());
+        assertEquals(DB_PRODUCT_COUNT - 1,productService.getAllProducts().size());
     }
 }

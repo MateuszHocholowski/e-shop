@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
         Product currentProduct = getProductByName(productName);
         Product productToUpdate = productMapper.productDtoToProduct(productDto);
         if (productToUpdate.getName() == null) {
-            productToUpdate.setName(productName);
+            throw new BadRequestException("Please insert the name of the Product you want to update");
         }
         productToUpdate.setId(currentProduct.getId());
         return saveProductAndReturnDto(productToUpdate);
