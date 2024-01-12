@@ -16,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,26 +29,27 @@ public class ProductServiceImplIT {
     private ProductService productService;
     private int DEFAULT_DB_PRODUCT_COUNT;
     private static final String DB_PRODUCT1_NAME = BootstrapProduct.DB_PRODUCT1_NAME;
-    private List<String> DB_PRODUCT_NAME_LIST;
+    private BootstrapProduct bootstrapProduct;
 
     @BeforeEach()
     void setUp() {
-        BootstrapProduct bootstrapProduct = new BootstrapProduct(productRepository);
+        bootstrapProduct = new BootstrapProduct(productRepository);
         bootstrapProduct.loadData();
 
         productService = new ProductServiceImpl(productRepository);
         DEFAULT_DB_PRODUCT_COUNT = bootstrapProduct.getProducts().size();
-        DB_PRODUCT_NAME_LIST = bootstrapProduct.getProducts().stream()
-                .map(Product::getName)
-                .collect(Collectors.toList());
     }
 
     @Test
     void getAllProducts() {
+        //given
+        List<String> dbProductNamesList = bootstrapProduct.getProducts().stream()
+                .map(Product::getName).toList();
+        //when
         List<ProductDto> productDtos = productService.getAllProducts();
         List<String> productNames = productDtos.stream().map(ProductDto::getName).toList();
-
-        assertThat(productNames).containsExactlyInAnyOrderElementsOf(DB_PRODUCT_NAME_LIST);
+        //then
+        assertThat(productNames).containsExactlyInAnyOrderElementsOf(dbProductNamesList);
     }
 
     @Test
