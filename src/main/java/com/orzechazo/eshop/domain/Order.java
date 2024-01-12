@@ -7,13 +7,14 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = "user")
 @Entity
 public class Order extends BaseEntity{
 
@@ -35,6 +36,17 @@ public class Order extends BaseEntity{
             order.setOrderId(orderId);
         } else {
             throw new BadRequestException("Order already has an id: " + order.getOrderId());
+        }
+    }
+    public void setUser(User user) {
+        this.user = user;
+        if (user != null) {
+            if (user.getOrders() == null) {
+                user.setOrders(new ArrayList<>());
+            }
+            if (!user.getOrders().contains(this)) {
+                user.getOrders().add(this);
+            }
         }
     }
 }

@@ -3,7 +3,6 @@ package com.orzechazo.eshop.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.orzechazo.eshop.domain.dto.OrderDto;
-import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.services.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OrderControllerTest {
 
     public static final String ORDER_ID = "1";
-    public static final String LOGIN = "testLogin";
     @InjectMocks
     private OrderController orderController;
     @Mock
@@ -60,22 +58,18 @@ class OrderControllerTest {
         when(orderService.getOrderByOrderId(anyString())).thenReturn(orderDto);
 
         mockMvc.perform(get("/orders/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                        .param("orderId",ORDER_ID))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orderId",equalTo(ORDER_ID)));
     }
 
     @Test
     void getOrdersByUser() throws Exception {
-        UserDto userDto = UserDto.builder().login(LOGIN).build();
         List<OrderDto> orderDtos = List.of(OrderDto.builder().build(), OrderDto.builder().build());
         when(orderService.getOrdersByUser(any())).thenReturn(orderDtos);
 
         mockMvc.perform(get("/orders/user/testLogin")
-                .contentType(MediaType.APPLICATION_JSON)
-                        .content(writer.writeValueAsString(userDto))
-                        .param("login", userDto.getLogin()))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(2)));
     }
@@ -99,8 +93,7 @@ class OrderControllerTest {
 
         mockMvc.perform(post("/orders/update/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(writer.writeValueAsString(orderDto))
-                        .param("orderId",ORDER_ID))
+                        .content(writer.writeValueAsString(orderDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orderId", equalTo(ORDER_ID)));
     }
@@ -108,8 +101,7 @@ class OrderControllerTest {
     @Test
     void deleteOrderByOrderId() throws Exception {
         mockMvc.perform(delete("/orders/delete/orderId")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("orderId",ORDER_ID))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(orderService,times(1)).deleteOrderByOrderId(anyString());
     }

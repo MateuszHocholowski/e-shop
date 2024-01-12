@@ -1,7 +1,6 @@
 package com.orzechazo.eshop.controllers;
 
 import com.orzechazo.eshop.domain.dto.OrderDto;
-import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.services.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +23,13 @@ public class OrderController {
     }
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
-    public OrderDto getOrderByOrderId(@RequestParam String orderId) {
+    public OrderDto getOrderByOrderId(@PathVariable String orderId) {
         return orderService.getOrderByOrderId(orderId);
     }
     @GetMapping("/user/{login}")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> getOrdersByUser(@RequestParam String login, @RequestBody UserDto userDto) {
-        return orderService.getOrdersByUser(userDto);
+    public List<OrderDto> getOrdersByUser(@PathVariable String login) {
+        return orderService.getOrdersByUser(login);
     }
     @PutMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
@@ -39,12 +38,12 @@ public class OrderController {
     }
     @PostMapping("/update/{orderId}")
     @ResponseStatus(HttpStatus.OK)
-    public OrderDto updateOrder(@RequestParam String orderId, @RequestBody OrderDto orderDto) {
+    public OrderDto updateOrder(@PathVariable String orderId, @RequestBody OrderDto orderDto) {
         return orderService.updateOrder(orderId,orderDto);
     }
     @DeleteMapping("/delete/{orderId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteOrderByOrderId(@RequestParam String orderId) {
+    public void deleteOrderByOrderId(@PathVariable String orderId) {
         orderService.deleteOrderByOrderId(orderId);
     }
 }
