@@ -1,6 +1,7 @@
 package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.bootstrap.tests.BootstrapProduct;
+import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.ProductDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
@@ -15,6 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -26,8 +30,7 @@ public class ProductServiceImplIT {
     private ProductService productService;
     private int DEFAULT_DB_PRODUCT_COUNT;
     private static final String DB_PRODUCT1_NAME = BootstrapProduct.DB_PRODUCT1_NAME;
-    private static final String DB_PRODUCT2_NAME = BootstrapProduct.DB_PRODUCT2_NAME;
-    private static final String DB_PRODUCT3_NAME = BootstrapProduct.DB_PRODUCT3_NAME;
+    private List<String> DB_PRODUCT_NAME_LIST;
 
     @BeforeEach()
     void setUp() {
@@ -36,16 +39,17 @@ public class ProductServiceImplIT {
 
         productService = new ProductServiceImpl(productRepository);
         DEFAULT_DB_PRODUCT_COUNT = bootstrapProduct.getProducts().size();
+        DB_PRODUCT_NAME_LIST = bootstrapProduct.getProducts().stream()
+                .map(Product::getName)
+                .collect(Collectors.toList());
     }
 
     @Test
     void getAllProducts() {
         List<ProductDto> productDtos = productService.getAllProducts();
+        List<String> productNames = productDtos.stream().map(ProductDto::getName).toList();
 
-        assertEquals(DEFAULT_DB_PRODUCT_COUNT,productDtos.size());
-        assertEquals(DB_PRODUCT1_NAME, productDtos.get(0).getName());
-        assertEquals(DB_PRODUCT2_NAME, productDtos.get(1).getName());
-        assertEquals(DB_PRODUCT3_NAME, productDtos.get(2).getName());
+        assertThat(productNames).containsExactlyInAnyOrderElementsOf(DB_PRODUCT_NAME_LIST);
     }
 
     @Test
