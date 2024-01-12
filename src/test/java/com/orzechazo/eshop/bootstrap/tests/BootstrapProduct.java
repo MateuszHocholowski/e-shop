@@ -21,13 +21,7 @@ public class BootstrapProduct {
     }
 
     public void loadData() {
-        log.debug("Loading test data...");
-        setProductData();
-        log.debug("Data loaded.");
-    }
-    private void setProductData() {
-        log.debug("Loading products...");
-
+        log.debug("Loading Products Data");
         Product product1 = new Product();
         product1.setName(DB_PRODUCT_NAME);
         product1.setAmount(5);
@@ -53,8 +47,6 @@ public class BootstrapProduct {
         productRepository.save(product3);
 
         products.addAll(List.of(product1,product2,product3));
-
-        log.debug("Products loaded: " + productRepository.count());
     }
 
     public List<Product> getProducts() {

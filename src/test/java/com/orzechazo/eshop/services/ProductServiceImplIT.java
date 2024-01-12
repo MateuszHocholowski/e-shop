@@ -24,7 +24,7 @@ public class ProductServiceImplIT {
     @Autowired
     private ProductRepository productRepository;
     private ProductService productService;
-    private int DB_PRODUCT_COUNT;
+    private int DEFAULT_DB_PRODUCT_COUNT;
     private static final String DB_PRODUCT_NAME = BootstrapProduct.DB_PRODUCT_NAME;
 
     @BeforeEach()
@@ -33,16 +33,17 @@ public class ProductServiceImplIT {
         bootstrapProduct.loadData();
 
         productService = new ProductServiceImpl(productRepository);
-        DB_PRODUCT_COUNT = bootstrapProduct.getProducts().size();
+        DEFAULT_DB_PRODUCT_COUNT = bootstrapProduct.getProducts().size();
     }
 
     @Test
     void getAllProducts() {
         List<ProductDto> productDtos = productService.getAllProducts();
 
-        assertEquals(DB_PRODUCT_COUNT,productDtos.size());
-        assertEquals(DB_PRODUCT_NAME, productDtos.get(0).getName());
-        assertNotNull(productDtos.get(DB_PRODUCT_COUNT-1));
+        assertEquals(DEFAULT_DB_PRODUCT_COUNT,productDtos.size());
+        assertEquals("dbProduct1", productDtos.get(0).getName());
+        assertEquals("dbProduct2", productDtos.get(1).getName());
+        assertEquals("dbProduct3", productDtos.get(2).getName());
     }
 
     @Test
@@ -74,7 +75,7 @@ public class ProductServiceImplIT {
         ProductDto createdDto = productService.createProduct(newProduct);
         //then
         assertEquals(newProduct,createdDto);
-        assertEquals(DB_PRODUCT_COUNT+1, productRepository.count());
+        assertEquals(DEFAULT_DB_PRODUCT_COUNT +1, productRepository.count());
     }
 
     @Test
@@ -110,7 +111,7 @@ public class ProductServiceImplIT {
         assertEquals(new BigDecimal("4"),updatedProduct.getGrossPrice());
         assertEquals(10,updatedProduct.getAmount());
         assertEquals("newDescription",updatedProduct.getDescription());
-        assertEquals(DB_PRODUCT_COUNT,productRepository.count());
+        assertEquals(DEFAULT_DB_PRODUCT_COUNT,productRepository.count());
     }
 
     @Test
@@ -143,6 +144,6 @@ public class ProductServiceImplIT {
         //when
         productService.deleteProductByProductName(DB_PRODUCT_NAME);
         //then
-        assertEquals(DB_PRODUCT_COUNT - 1,productService.getAllProducts().size());
+        assertEquals(DEFAULT_DB_PRODUCT_COUNT - 1,productService.getAllProducts().size());
     }
 }
