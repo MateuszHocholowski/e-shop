@@ -80,7 +80,8 @@ class UserControllerTest {
 
         mockMvc.perform(post("/users/test/update")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(userDto)))
+                .content(writer.writeValueAsString(userDto))
+                .param("login","test"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login",equalTo("test")));
     }

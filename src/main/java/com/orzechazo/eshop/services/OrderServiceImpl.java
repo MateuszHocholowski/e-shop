@@ -14,10 +14,12 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
+    private final UserService userService;
     private final OrderMapper orderMapper = OrderMapper.INSTANCE;
 
-    public OrderServiceImpl(OrderRepository orderRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserService userService) {
         this.orderRepository = orderRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -35,11 +37,9 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public List<OrderDto> getOrdersByUser(UserDto userDto) {
-        return orderRepository.findAll().stream()
-                .map(orderMapper::orderToOrderDto)
-                .filter(productDto -> productDto.getUser().equals(userDto))
-                .toList(); //todo change the method to improve performance
+    public List<OrderDto> getOrdersByUser(String userLogin) {
+        UserDto returnedUserDto = userService.getUserByLogin(userLogin);
+        return returnedUserDto.getOrders();
     }
 
     @Override

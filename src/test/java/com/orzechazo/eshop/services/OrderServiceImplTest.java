@@ -1,7 +1,6 @@
 package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Order;
-import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
@@ -27,6 +26,8 @@ class OrderServiceImplTest {
     public static final String ORDER_ID = "1";
     @InjectMocks
     private OrderServiceImpl orderService;
+    @Mock
+    private UserServiceImpl userService;
     @Mock
     private OrderRepository orderRepository;
 
@@ -68,23 +69,15 @@ class OrderServiceImplTest {
     @Test
     void getOrdersByUser() {
         //given
-        User user = new User();
-        user.setLogin("login1");
-        UserDto userDto = UserDto.builder().login("login1").build();
-        Order order1 = new Order();
-        order1.setUser(user);
-        order1.setTotalPrice(PRICE);
-        Order order2 = new Order();
-        order2.setUser(user);
-        order2.setTotalPrice(PRICE);
-        List<Order> orders = List.of(order1,order2);
-        when(orderRepository.findAll()).thenReturn(orders);
+        OrderDto orderDto1 = OrderDto.builder().totalPrice(PRICE).build();
+        OrderDto orderDto2 = OrderDto.builder().totalPrice(PRICE).build();
+        UserDto userDto = UserDto.builder().login("login1").orders(List.of(orderDto1,orderDto2)).build();
+        when(userService.getUserByLogin(anyString())).thenReturn(userDto);
         //when
-        List<OrderDto> returnedDtos = orderService.getOrdersByUser(userDto);
+        List<OrderDto> returnedDtos = orderService.getOrdersByUser("login1");
         //then
         assertEquals(2,returnedDtos.size());
         assertEquals(PRICE,returnedDtos.get(0).getTotalPrice());
-        assertEquals("login1",returnedDtos.get(1).getUser().getLogin());
     }
 
     @Test
