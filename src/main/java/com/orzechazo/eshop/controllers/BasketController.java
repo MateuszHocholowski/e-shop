@@ -25,7 +25,7 @@ public class BasketController {
     }
     @PostMapping("/update/{basketId}")
     @ResponseStatus(HttpStatus.OK)
-    public BasketDto updateBasket(@RequestParam String basketId, @RequestBody BasketDto basketDto) {
+    public BasketDto updateBasket(@PathVariable String basketId, @RequestBody BasketDto basketDto) {
         return basketService.updateBasket(basketDto);
     }
     @DeleteMapping("/delete/{basketId}")
