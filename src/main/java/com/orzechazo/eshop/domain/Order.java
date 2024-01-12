@@ -47,6 +47,6 @@ public class Order extends BaseEntity{
             if (!user.getOrders().contains(this)) {
                 user.getOrders().add(this);
             }
-        }
+        } //todo change the method or change connection between user and order
     }
 }
