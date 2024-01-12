@@ -1,6 +1,7 @@
 package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.bootstrap.tests.BootstrapUser;
+import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
@@ -16,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -27,9 +29,10 @@ class UserServiceImplIT {
     private UserServiceImpl userService;
     private final static String DB_USER_NAME = BootstrapUser.DB_USER_NAME;
     private int DEFAULT_DB_USER_COUNT;
+    private BootstrapUser bootstrapUser;
     @BeforeEach
     void setUp() {
-        BootstrapUser bootstrapUser = new BootstrapUser(userRepository);
+        bootstrapUser = new BootstrapUser(userRepository);
         bootstrapUser.loadData();
         DEFAULT_DB_USER_COUNT = bootstrapUser.getUsers().size();
 
@@ -38,12 +41,13 @@ class UserServiceImplIT {
 
     @Test
     void getAllUsers() {
+        List<String> dbUsersLoginList = bootstrapUser.getUsers().stream()
+                .map(User::getLogin).toList();
         //when
         List<UserDto> userDtos = userService.getAllUsers();
+        List<String> userDtosLogins = userDtos.stream().map(UserDto::getLogin).toList();
         //then
-        assertEquals(DEFAULT_DB_USER_COUNT,userDtos.size());
-        assertEquals("user1",userDtos.get(0).getLogin());
-        assertEquals("user2", userDtos.get(1).getLogin());
+        assertThat(dbUsersLoginList).containsExactlyInAnyOrderElementsOf(userDtosLogins);
     }
 
     @Test

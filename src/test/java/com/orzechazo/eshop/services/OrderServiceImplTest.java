@@ -72,7 +72,7 @@ class OrderServiceImplTest {
         OrderDto orderDto1 = OrderDto.builder().totalPrice(PRICE).build();
         OrderDto orderDto2 = OrderDto.builder().totalPrice(PRICE).build();
         UserDto userDto = UserDto.builder().login("login1").orders(List.of(orderDto1,orderDto2)).build();
-        when(userService.getUserByLogin(anyString())).thenReturn(userDto);
+        when(userService.getUserDtoByLogin(anyString())).thenReturn(userDto);
         //when
         List<OrderDto> returnedDtos = orderService.getOrdersByUser("login1");
         //then

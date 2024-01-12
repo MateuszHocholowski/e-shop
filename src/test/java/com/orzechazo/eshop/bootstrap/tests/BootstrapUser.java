@@ -1,10 +1,12 @@
 package com.orzechazo.eshop.bootstrap.tests;
 
+import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +24,14 @@ public class BootstrapUser {
 
     public void loadData() {
         log.debug("Loading User Data");
+        Order order = new Order();
+        order.setOrderDate(LocalDateTime.now());
+        Order.createOrderId(order);
 
         User user1 = new User();
         user1.setLogin(DB_USER_NAME);
         user1.setPassword("password1");
+        user1.addOrder(order);
         userRepository.save(user1);
 
         User user2 = new User();

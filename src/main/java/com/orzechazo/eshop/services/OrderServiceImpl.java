@@ -38,7 +38,7 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public List<OrderDto> getOrdersByUser(String userLogin) {
-        UserDto returnedUserDto = userService.getUserByLogin(userLogin);
+        UserDto returnedUserDto = userService.getUserDtoByLogin(userLogin);
         return returnedUserDto.getOrders();
     }
 
