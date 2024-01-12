@@ -32,7 +32,7 @@ class BasketServiceImplTest {
         basket.setBasketId(BASKET_ID);
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         //when
-        BasketDto returnedDto = basketService.getBasketByBasketId(BASKET_ID);
+        BasketDto returnedDto = basketService.getBasketDtoByBasketId(BASKET_ID);
         //then
         assertEquals(BASKET_ID,returnedDto.getBasketId());
     }
@@ -40,7 +40,7 @@ class BasketServiceImplTest {
     @Test
     void getBasketByBasketIdNotFound() {
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> basketService.getBasketByBasketId(BASKET_ID));
+                () -> basketService.getBasketDtoByBasketId(BASKET_ID));
         //then
         assertEquals("Basket: 1 doesn't exist in database",exception.getMessage());
     }
@@ -76,6 +76,7 @@ class BasketServiceImplTest {
         BasketDto basketDto = BasketDto.builder().basketId(BASKET_ID).build();
         Basket basket = new Basket();
         basket.setBasketId(BASKET_ID);
+        when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(basket);
         //when
         BasketDto updatedDto = basketService.updateBasket(basketDto);
