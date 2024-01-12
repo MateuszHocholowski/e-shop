@@ -5,24 +5,26 @@ import com.orzechazo.eshop.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Component
 public class BootstrapUser {
 
     private final UserRepository userRepository;
+    private List<User> users = new ArrayList<>();
+    public static final String DB_USER_NAME = "user1";
 
     public BootstrapUser(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public void loadData() {
-        setUserData();
-    }
-    private void setUserData() {
         log.debug("Loading User Data");
 
         User user1 = new User();
-        user1.setLogin("user1");
+        user1.setLogin(DB_USER_NAME);
         user1.setPassword("password1");
         userRepository.save(user1);
 
@@ -31,7 +33,11 @@ public class BootstrapUser {
         user2.setPassword("password2");
         userRepository.save(user2);
 
-        log.debug("Users loaded: " + userRepository.count());
+        users = List.of(user1,user2);
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 }
 

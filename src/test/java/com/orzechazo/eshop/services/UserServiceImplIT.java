@@ -1,6 +1,7 @@
 package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.bootstrap.tests.BootstrapUser;
+import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
@@ -21,95 +22,105 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserServiceImplIT {
-
     @Autowired
     private UserRepository userRepository;
     private UserServiceImpl userService;
+    private final static String DB_USER_NAME = BootstrapUser.DB_USER_NAME;
+    private int DEFAULT_DB_USER_COUNT;
     @BeforeEach
     void setUp() {
         BootstrapUser bootstrapUser = new BootstrapUser(userRepository);
         bootstrapUser.loadData();
+        DEFAULT_DB_USER_COUNT = bootstrapUser.getUsers().size();
 
         userService = new UserServiceImpl(userRepository);
     }
 
     @Test
     void getAllUsers() {
-        //given
-        long count = userRepository.count();
         //when
         List<UserDto> userDtos = userService.getAllUsers();
         //then
-        assertEquals(count,userDtos.size());
+        assertEquals(DEFAULT_DB_USER_COUNT,userDtos.size());
         assertEquals("user1",userDtos.get(0).getLogin());
         assertEquals("user2", userDtos.get(1).getLogin());
     }
 
     @Test
     void getUserByLogin() {
-        UserDto returnedDto = userService.getUserDtoByLogin("user1");
+        UserDto returnedDto = userService.getUserDtoByLogin(DB_USER_NAME);
 
         assertEquals("user1",returnedDto.getLogin());
         assertNull(returnedDto.getPassword());
     }
 
     @Test
-    void getUserByLoginNotFound() {
+    void getUserByLoginNotExistingInDatabase() {
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> userService.getUserDtoByLogin("test"));
-        assertEquals("User: test doesn't exist in database.",exception.getMessage());
+                () -> userService.getUserDtoByLogin("notExistingUser"));
+        assertEquals("User: notExistingUser doesn't exist in database.",exception.getMessage());
     }
 
     @Test
     void createUser() {
-        long count = userRepository.count();
-        UserDto userDto = UserDto.builder().login("testLogin")
+        UserDto newUser = UserDto.builder().login("newUser")
                 .password("testPassword").build();
         //when
-        UserDto createdDto = userService.createUser(userDto);
+        UserDto createdDto = userService.createUser(newUser);
         //then
-        assertEquals("testLogin",createdDto.getLogin());
+        assertEquals("newUser",createdDto.getLogin());
         assertNull(createdDto.getPassword());
-        assertEquals(count + 1,userRepository.count());
+        assertEquals(DEFAULT_DB_USER_COUNT + 1,userRepository.count());
     }
 
     @Test
-    void createUserExists() {
-        UserDto userDto = UserDto.builder().login("user2").password("testPassword").build();
+    void testTryToCreateUserWhoseLoginIsAlreadyInDatabase() {
+        UserDto userDto = UserDto.builder().login(DB_USER_NAME).password("testPassword").build();
 
         Exception exception = assertThrows(BadRequestException.class,
                 () -> userService.createUser(userDto));
-        assertEquals("User: user2 is already in database.",exception.getMessage());
+        assertEquals("User: " + DB_USER_NAME + " is already in database.",exception.getMessage());
+    }
+
+    @Test
+    void testTryToCreateTheSameUserTwice() {
+        UserDto userDto = UserDto.builder().login("newUser").build();
+
+        userService.createUser(userDto);
+        Exception exception = assertThrows(BadRequestException.class,
+                () -> userService.createUser(userDto));
+        assertEquals("User: newUser is already in database.",exception.getMessage());
     }
 
     @Test
     void updateUser() {
-        long count = userRepository.count();
-        UserDto userToUpdate = UserDto.builder().login("user1").
-                password("newPassword").build();
+        OrderDto newOrder = OrderDto.builder().orderId("1").build();
+        UserDto userToUpdate = UserDto.builder().login(DB_USER_NAME).orders(List.of(newOrder))
+                .password("newPassword").build();
         //when
-        UserDto updatedUser = userService.updateUser(userToUpdate);
+        userService.updateUser(userToUpdate);
+        UserDto updatedUser = userService.getUserDtoByLogin(DB_USER_NAME);
         //then
         assertEquals("user1",updatedUser.getLogin());
-        assertEquals(count,userRepository.count());
+        assertEquals("1", updatedUser.getOrders().get(0).getOrderId());
+        assertEquals(DEFAULT_DB_USER_COUNT,userRepository.count());
     }
 
     @Test
-    void updateUserNotExist() {
-        UserDto userToUpdate = UserDto.builder().login("test").
+    void tryToUpdateUserWithLoginNotInDatabase() {
+        UserDto userToUpdate = UserDto.builder().login("userNotInDatabase").
                 password("newPassword").build();
         Exception exception = assertThrows(ResourceNotFoundException.class,
                 () -> userService.updateUser(userToUpdate));
-        assertEquals("User: test doesn't exist in database.",exception.getMessage());
+        assertEquals("User: userNotInDatabase doesn't exist in database.",exception.getMessage());
     }
 
 
     @Test
     void deleteUserByLogin() {
-        long count = userRepository.count();
         //when
-        userService.deleteUserByLogin("user1");
+        userService.deleteUserByLogin(DB_USER_NAME);
         //then
-        assertEquals(count -1,userRepository.count());
+        assertEquals(DEFAULT_DB_USER_COUNT -1,userRepository.count());
     }
 }
