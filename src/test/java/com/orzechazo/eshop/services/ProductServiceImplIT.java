@@ -25,7 +25,9 @@ public class ProductServiceImplIT {
     private ProductRepository productRepository;
     private ProductService productService;
     private int DEFAULT_DB_PRODUCT_COUNT;
-    private static final String DB_PRODUCT_NAME = BootstrapProduct.DB_PRODUCT_NAME;
+    private static final String DB_PRODUCT1_NAME = BootstrapProduct.DB_PRODUCT1_NAME;
+    private static final String DB_PRODUCT2_NAME = BootstrapProduct.DB_PRODUCT2_NAME;
+    private static final String DB_PRODUCT3_NAME = BootstrapProduct.DB_PRODUCT3_NAME;
 
     @BeforeEach()
     void setUp() {
@@ -41,19 +43,19 @@ public class ProductServiceImplIT {
         List<ProductDto> productDtos = productService.getAllProducts();
 
         assertEquals(DEFAULT_DB_PRODUCT_COUNT,productDtos.size());
-        assertEquals("dbProduct1", productDtos.get(0).getName());
-        assertEquals("dbProduct2", productDtos.get(1).getName());
-        assertEquals("dbProduct3", productDtos.get(2).getName());
+        assertEquals(DB_PRODUCT1_NAME, productDtos.get(0).getName());
+        assertEquals(DB_PRODUCT2_NAME, productDtos.get(1).getName());
+        assertEquals(DB_PRODUCT3_NAME, productDtos.get(2).getName());
     }
 
     @Test
     void getProductByProductName() {
         //given
-        ProductDto expectedDto = ProductDto.builder().name(DB_PRODUCT_NAME).amount(5)
+        ProductDto expectedDto = ProductDto.builder().name(DB_PRODUCT1_NAME).amount(5)
                 .netPrice(new BigDecimal("1.5")).grossPrice(new BigDecimal("3.1"))
                 .description("testDescription1").build();
         //when
-        ProductDto returnedDto = productService.getProductDtoByName(DB_PRODUCT_NAME);
+        ProductDto returnedDto = productService.getProductDtoByName(DB_PRODUCT1_NAME);
         //then
         assertEquals(expectedDto,returnedDto);
     }
@@ -80,12 +82,12 @@ public class ProductServiceImplIT {
 
     @Test
     void testTryToCreateProductWhoseNameIsAlreadyInDatabase() {
-        ProductDto existingProduct = ProductDto.builder().name(DB_PRODUCT_NAME).amount(2)
+        ProductDto existingProduct = ProductDto.builder().name(DB_PRODUCT1_NAME).amount(2)
                 .netPrice(new BigDecimal("13")).grossPrice(new BigDecimal("7"))
                 .build();
         Exception exception = assertThrows(BadRequestException.class,
                 () -> productService.createProduct(existingProduct));
-        assertEquals("Product: " + DB_PRODUCT_NAME + " is already in database.",exception.getMessage());
+        assertEquals("Product: " + DB_PRODUCT1_NAME + " is already in database.",exception.getMessage());
     }
 
     @Test
@@ -99,13 +101,13 @@ public class ProductServiceImplIT {
 
     @Test
     void testUpdateProduct() {
-        ProductDto productToUpdate = ProductDto.builder().name(DB_PRODUCT_NAME).amount(10)
+        ProductDto productToUpdate = ProductDto.builder().name(DB_PRODUCT1_NAME).amount(10)
                 .netPrice(new BigDecimal("2")).grossPrice(new BigDecimal("4"))
                 .description("newDescription").build();
 
-        productService.updateProduct(DB_PRODUCT_NAME, productToUpdate);
+        productService.updateProduct(DB_PRODUCT1_NAME, productToUpdate);
 
-        ProductDto updatedProduct = productService.getProductDtoByName(DB_PRODUCT_NAME);
+        ProductDto updatedProduct = productService.getProductDtoByName(DB_PRODUCT1_NAME);
 
         assertEquals(new BigDecimal("2"),updatedProduct.getNetPrice());
         assertEquals(new BigDecimal("4"),updatedProduct.getGrossPrice());
@@ -121,7 +123,7 @@ public class ProductServiceImplIT {
                 .description("newDescription").build();
 
         Exception exception = assertThrows(BadRequestException.class,
-                () -> productService.updateProduct(DB_PRODUCT_NAME,productDtoWithoutNameField));
+                () -> productService.updateProduct(DB_PRODUCT1_NAME,productDtoWithoutNameField));
         assertEquals("Please insert the name of the Product you want to update", exception.getMessage());
     }
 
@@ -132,17 +134,17 @@ public class ProductServiceImplIT {
                 .netPrice(new BigDecimal("2")).grossPrice(new BigDecimal("4"))
                 .description("newDescription").build();
         //when
-        productService.updateProduct(DB_PRODUCT_NAME,productToUpdate);
+        productService.updateProduct(DB_PRODUCT1_NAME,productToUpdate);
         //then
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> productService.getProductDtoByName(DB_PRODUCT_NAME));
-        assertEquals("Product: "+ DB_PRODUCT_NAME + " doesn't exist in database.",exception.getMessage());
+                () -> productService.getProductDtoByName(DB_PRODUCT1_NAME));
+        assertEquals("Product: "+ DB_PRODUCT1_NAME + " doesn't exist in database.",exception.getMessage());
     }
 
     @Test
     void testDeleteProduct() {
         //when
-        productService.deleteProductByProductName(DB_PRODUCT_NAME);
+        productService.deleteProductByProductName(DB_PRODUCT1_NAME);
         //then
         assertEquals(DEFAULT_DB_PRODUCT_COUNT - 1,productService.getAllProducts().size());
     }
