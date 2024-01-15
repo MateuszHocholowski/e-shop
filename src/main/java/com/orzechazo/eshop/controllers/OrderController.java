@@ -24,7 +24,7 @@ public class OrderController {
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public OrderDto getOrderByOrderId(@PathVariable String orderId) {
-        return orderService.getOrderByOrderId(orderId);
+        return orderService.getOrderDtoByOrderId(orderId);
     }
     @GetMapping("/user/{login}")
     @ResponseStatus(HttpStatus.OK)
@@ -35,11 +35,6 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDto createOrder(@RequestBody OrderDto orderDto) {
         return orderService.createOrder(orderDto);
-    }
-    @PostMapping("/update/{orderId}")
-    @ResponseStatus(HttpStatus.OK)
-    public OrderDto updateOrder(@PathVariable String orderId, @RequestBody OrderDto orderDto) {
-        return orderService.updateOrder(orderId,orderDto);
     }
     @DeleteMapping("/delete/{orderId}")
     @ResponseStatus(HttpStatus.OK)

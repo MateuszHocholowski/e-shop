@@ -1,5 +1,6 @@
 package com.orzechazo.eshop.services;
 
+import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
@@ -27,9 +28,8 @@ public class UserServiceImpl implements UserService{
                 .toList();
     }
     @Override
-    public UserDto getUserByLogin(String login) {
-        return userMapper.userToUserDto(userRepository.findByLogin(login)
-                .orElseThrow(() -> new ResourceNotFoundException("User: " + login + " doesn't exist in database")));
+    public UserDto getUserDtoByLogin(String login) {
+        return userMapper.userToUserDto(getUserByLogin(login));
     }
 
     @Override
@@ -44,8 +44,18 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        User updateUser = userMapper.userDtoToUser(userDto);
-        return saveUserAndReturnDto(updateUser);
+        User currentUser = getUserByLogin(userDto.getLogin());
+        if (userDto.getPassword() != null && !userDto.getPassword().equals(currentUser.getPassword())) {
+            currentUser.setPassword(userDto.getPassword());
+        }
+        return saveUserAndReturnDto(currentUser);
+    }
+
+    @Override
+    public Order addOrder(String userLogin, Order order) {
+        User currentUser = getUserByLogin(userLogin);
+        currentUser.addOrder(order);
+        return order;
     }
 
     private UserDto saveUserAndReturnDto(User user) {
@@ -55,5 +65,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUserByLogin(String login) {
         userRepository.deleteByLogin(login);
+    }
+
+    private User getUserByLogin(String login) {
+        return userRepository.findByLogin(login).orElseThrow(
+                () -> new ResourceNotFoundException("User: " + login + " doesn't exist in database."));
     }
 }

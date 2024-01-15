@@ -56,23 +56,30 @@ class OrderServiceImplTest {
         order1.setOrderId(ORDER_ID);
         when(orderRepository.findByOrderId(any())).thenReturn(Optional.of(order1));
         //when
-        OrderDto returnedDto = orderService.getOrderByOrderId(ORDER_ID);
+        OrderDto returnedDto = orderService.getOrderDtoByOrderId(ORDER_ID);
         //then
         assertEquals(PRICE,returnedDto.getTotalPrice());
         assertEquals(ORDER_ID,returnedDto.getOrderId());
     }
     @Test
     void getOrderByOrderIdBadRequest() {
-        Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderByOrderId(ORDER_ID));
+        Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderDtoByOrderId(ORDER_ID));
         assertEquals("Order with id: 1 doesn't exist in database.", exception.getMessage());
     }
     @Test
     void getOrdersByUser() {
         //given
-        OrderDto orderDto1 = OrderDto.builder().totalPrice(PRICE).build();
-        OrderDto orderDto2 = OrderDto.builder().totalPrice(PRICE).build();
-        UserDto userDto = UserDto.builder().login("login1").orders(List.of(orderDto1,orderDto2)).build();
-        when(userService.getUserByLogin(anyString())).thenReturn(userDto);
+        Order order1 = new Order();
+        order1.setOrderId("order1");
+        order1.setTotalPrice(PRICE);
+        Order order2 = new Order();
+        order2.setOrderId("order2");
+        order2.setTotalPrice(PRICE);
+        UserDto userDto = UserDto.builder().login("login1")
+                .orderIdList(List.of(order1.getOrderId(),order2.getOrderId())).build();
+        when(userService.getUserDtoByLogin(anyString())).thenReturn(userDto);
+        when(orderRepository.findByOrderId("order1")).thenReturn(Optional.of(order1));
+        when(orderRepository.findByOrderId("order2")).thenReturn(Optional.of(order2));
         //when
         List<OrderDto> returnedDtos = orderService.getOrdersByUser("login1");
         //then
@@ -85,11 +92,14 @@ class OrderServiceImplTest {
         //given
         Order order1 = new Order();
         order1.setTotalPrice(PRICE);
+        OrderDto orderDto = OrderDto.builder().userLogin("login").build();
+        when(userService.addOrder(anyString(),any())).thenReturn(order1);
         when(orderRepository.save(any())).thenReturn(order1);
         //when
-        OrderDto createdDto = orderService.createOrder(OrderDto.builder().build());
+        OrderDto createdDto = orderService.createOrder(orderDto);
         //then
         assertEquals(PRICE,createdDto.getTotalPrice());
+        verify(userService,times(1)).addOrder(anyString(),any());
         verify(orderRepository,times(1)).save(any());
     }
 
@@ -98,19 +108,6 @@ class OrderServiceImplTest {
         Exception exception = assertThrows(BadRequestException.class,
                 () -> orderService.createOrder(OrderDto.builder().orderId(ORDER_ID).build()));
         assertEquals("Order already has an id: 1",exception.getMessage());
-    }
-
-    @Test
-    void updateOrder() {
-        //given
-        Order order1 = new Order();
-        order1.setTotalPrice(PRICE);
-        when(orderRepository.save(any())).thenReturn(order1);
-        //when
-        OrderDto updatedDto = orderService.updateOrder(ORDER_ID, OrderDto.builder().build());
-        //then
-        assertEquals(PRICE,updatedDto.getTotalPrice());
-        verify(orderRepository,times(1)).save(any());
     }
 
     @Test

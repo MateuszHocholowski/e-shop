@@ -8,6 +8,7 @@ import com.orzechazo.eshop.mappers.OrderMapper;
 import com.orzechazo.eshop.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,30 +31,25 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public OrderDto getOrderByOrderId(String orderId) {
-        return orderMapper.orderToOrderDto(orderRepository.findByOrderId(orderId)
-                .orElseThrow(()-> new ResourceNotFoundException("Order with id: " + orderId
-                        + " doesn't exist in database.")));
+    public OrderDto getOrderDtoByOrderId(String orderId) {
+        return orderMapper.orderToOrderDto(getOrderByOrderId(orderId));
     }
 
     @Override
     public List<OrderDto> getOrdersByUser(String userLogin) {
-        UserDto returnedUserDto = userService.getUserByLogin(userLogin);
-        return returnedUserDto.getOrders();
+        UserDto returnedUserDto = userService.getUserDtoByLogin(userLogin);
+        return returnedUserDto.getOrderIdList().stream()
+                .map(this::getOrderDtoByOrderId)
+                .toList();
     }
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         Order newOrder = orderMapper.orderDtoToOrder(orderDto);
         Order.createOrderId(newOrder);
+        newOrder.setOrderDate(LocalDateTime.now());
+        newOrder = userService.addOrder(orderDto.getUserLogin(), newOrder);
         return saveOrderAndReturnDto(newOrder);
-    }
-
-    @Override
-    public OrderDto updateOrder(String orderId, OrderDto orderDto) {
-        Order updateOrder = orderMapper.orderDtoToOrder(orderDto);
-        updateOrder.setOrderId(orderId);
-        return saveOrderAndReturnDto(updateOrder);
     }
 
     private OrderDto saveOrderAndReturnDto(Order order) {
@@ -63,5 +59,9 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public void deleteOrderByOrderId(String orderId) {
         orderRepository.deleteByOrderId(orderId);
+    }
+    private Order getOrderByOrderId(String orderId) {
+        return orderRepository.findByOrderId(orderId).orElseThrow(
+                ()-> new ResourceNotFoundException("Order with id: " + orderId + " doesn't exist in database."));
     }
 }

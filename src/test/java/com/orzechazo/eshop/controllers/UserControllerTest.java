@@ -53,7 +53,7 @@ class UserControllerTest {
     @Test
     void getUserByLogin() throws Exception {
         UserDto userDto = UserDto.builder().login("test").build();
-        when(userService.getUserByLogin(anyString())).thenReturn(userDto);
+        when(userService.getUserDtoByLogin(anyString())).thenReturn(userDto);
 
         mockMvc.perform(get("/users/test")
                 .contentType(MediaType.APPLICATION_JSON))
