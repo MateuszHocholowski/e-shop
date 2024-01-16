@@ -112,9 +112,12 @@ class OrderServiceImplTest {
 
     @Test
     void deleteOrderByOrderId() {
+        //given
+        Order order = new Order();
+        when(orderRepository.findByOrderId(any())).thenReturn(Optional.of(order));
         //when
         orderService.deleteOrderByOrderId(ORDER_ID);
         //then
-        verify(orderRepository,times(1)).deleteByOrderId(any());
+        verify(orderRepository,times(1)).delete(any());
     }
 }
