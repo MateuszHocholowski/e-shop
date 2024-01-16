@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Order addOrder(String userLogin, Order order) {
-        User currentUser = getUserByLogin(order.getUser().getLogin());
+        User currentUser = getUserByLogin(userLogin);
         currentUser.addOrder(order);
         return order;
     }
