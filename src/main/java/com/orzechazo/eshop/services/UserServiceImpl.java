@@ -53,9 +53,16 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Order addOrder(String userLogin, Order order) {
-        User currentUser = getUserByLogin(userLogin);
+        User currentUser = getUserByLogin(order.getUser().getLogin());
         currentUser.addOrder(order);
         return order;
+    }
+
+    @Override
+    public void deleteOrder(Order order) {
+        User currentUser = getUserByLogin(order.getUser().getLogin());
+        currentUser.getOrders().remove(order);
+        saveUserAndReturnDto(currentUser);
     }
 
     private UserDto saveUserAndReturnDto(User user) {
