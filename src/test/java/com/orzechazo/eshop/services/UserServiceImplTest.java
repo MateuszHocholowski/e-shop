@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -128,6 +129,20 @@ class UserServiceImplTest {
         //then
         assertEquals("login",returnedOrder.getUser().getLogin());
         assertEquals("order1", user.getOrders().get(0).getOrderId());
+    }
+
+    @Test
+    void deleteOrder() {
+        User user = new User();
+        user.setLogin("login");
+        Order order = new Order();
+        user.addOrder(order);
+        when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
+        //when
+        userService.deleteOrder(order);
+        //then
+        assertThat(user.getOrders()).isEmpty();
+        verify(userRepository,times(1)).save(any());
     }
 
     @Test
