@@ -11,13 +11,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Entity
+@Entity(name = "USERS")
 public class User extends BaseEntity{
 
     @Column(unique = true)
     private String login;
     private String password;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Product> favouriteProducts;
