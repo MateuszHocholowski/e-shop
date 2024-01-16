@@ -11,6 +11,7 @@ public interface UserService {
     UserDto createUser(UserDto userDto);
     UserDto updateUser(UserDto userDto);
     Order addOrder(String userLogin, Order order);
+    void deleteOrder(Order order);
     void deleteUserByLogin(String login);
 
 }
