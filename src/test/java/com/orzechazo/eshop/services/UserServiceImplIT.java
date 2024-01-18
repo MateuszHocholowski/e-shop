@@ -1,11 +1,12 @@
 package com.orzechazo.eshop.services;
 
-import com.orzechazo.eshop.bootstrap.tests.BootstrapUser;
+import com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
+import com.orzechazo.eshop.repositories.OrderRepository;
 import com.orzechazo.eshop.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,22 +27,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceImplIT {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     private UserServiceImpl userService;
-    private final static String DB_USER_NAME = BootstrapUser.DB_USER_NAME;
+    private final static String DB_USER_LOGIN = BootstrapUsersAndOrders.DB_USER_LOGIN;
     private int DEFAULT_DB_USER_COUNT;
-    private BootstrapUser bootstrapUser;
+    private BootstrapUsersAndOrders bootstrap;
     @BeforeEach
     void setUp() {
-        bootstrapUser = new BootstrapUser(userRepository);
-        bootstrapUser.loadData();
-        DEFAULT_DB_USER_COUNT = bootstrapUser.getUsers().size();
+        bootstrap = new BootstrapUsersAndOrders(orderRepository, userRepository);
+        bootstrap.loadData();
+        DEFAULT_DB_USER_COUNT = bootstrap.getUsers().size();
 
         userService = new UserServiceImpl(userRepository);
     }
 
     @Test
     void getAllUsers() {
-        List<String> dbUsersLoginList = bootstrapUser.getUsers().stream()
+        List<String> dbUsersLoginList = bootstrap.getUsers().stream()
                 .map(User::getLogin).toList();
         //when
         List<UserDto> userDtos = userService.getAllUsers();
@@ -52,7 +55,7 @@ class UserServiceImplIT {
 
     @Test
     void getUserByLogin() {
-        UserDto returnedDto = userService.getUserDtoByLogin(DB_USER_NAME);
+        UserDto returnedDto = userService.getUserDtoByLogin(DB_USER_LOGIN);
 
         assertEquals("user1",returnedDto.getLogin());
         assertNull(returnedDto.getPassword());
@@ -79,11 +82,11 @@ class UserServiceImplIT {
 
     @Test
     void testTryToCreateUserWhoseLoginIsAlreadyInDatabase() {
-        UserDto userDto = UserDto.builder().login(DB_USER_NAME).password("testPassword").build();
+        UserDto userDto = UserDto.builder().login(DB_USER_LOGIN).password("testPassword").build();
 
         Exception exception = assertThrows(BadRequestException.class,
                 () -> userService.createUser(userDto));
-        assertEquals("User: " + DB_USER_NAME + " is already in database.",exception.getMessage());
+        assertEquals("User: " + DB_USER_LOGIN + " is already in database.",exception.getMessage());
     }
 
     @Test
@@ -98,10 +101,10 @@ class UserServiceImplIT {
 
     @Test
     void updateUser() {
-        UserDto userToUpdate = UserDto.builder().login(DB_USER_NAME).password("newPassword").build();
+        UserDto userToUpdate = UserDto.builder().login(DB_USER_LOGIN).password("newPassword").build();
         //when
         userService.updateUser(userToUpdate);
-        UserDto updatedUser = userService.getUserDtoByLogin(DB_USER_NAME);
+        UserDto updatedUser = userService.getUserDtoByLogin(DB_USER_LOGIN);
         //then
         assertEquals("user1",updatedUser.getLogin());
         assertEquals(DEFAULT_DB_USER_COUNT,userRepository.count());
@@ -122,17 +125,17 @@ class UserServiceImplIT {
         Order newOrder = new Order();
         newOrder.setOrderId("newOrder");
         //when
-        userService.addOrder(DB_USER_NAME, newOrder);
-        UserDto userFromDb = userService.getUserDtoByLogin(DB_USER_NAME);
+        userService.addOrder(DB_USER_LOGIN, newOrder);
+        UserDto userFromDb = userService.getUserDtoByLogin(DB_USER_LOGIN);
         //then
         assertTrue(userFromDb.getOrderIdList().contains("newOrder"));
-        assertEquals(DB_USER_NAME, newOrder.getUser().getLogin());
+        assertEquals(DB_USER_LOGIN, newOrder.getUser().getLogin());
     }
 
     @Test
     void deleteUserByLogin() {
         //when
-        userService.deleteUserByLogin(DB_USER_NAME);
+        userService.deleteUserByLogin(DB_USER_LOGIN);
         //then
         assertEquals(DEFAULT_DB_USER_COUNT -1,userRepository.count());
     }
