@@ -1,6 +1,6 @@
 package com.orzechazo.eshop.services;
 
-import com.orzechazo.eshop.bootstrap.tests.BootstrapOrder;
+import com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
@@ -34,24 +34,24 @@ class OrderServiceImplIT {
     private OrderServiceImpl orderService;
     private UserServiceImpl userService;
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2024,1,1,0,0);
-    private static final String DB_USER_LOGIN = BootstrapOrder.DB_USER_LOGIN;
-    private static final String DB_ORDER_ID1 = BootstrapOrder.DB_ORDER_ID1;
+    private static final String DB_USER_LOGIN = BootstrapUsersAndOrders.DB_USER_LOGIN;
+    private static final String DB_ORDER_ID1 = BootstrapUsersAndOrders.DB_ORDER_ID1;
     private int DB_DEFAULT_ORDER_COUNT;
-    private BootstrapOrder bootstrapOrder;
+    private BootstrapUsersAndOrders bootstrapUsersAndOrders;
     @BeforeEach
     void setUp() {
-        bootstrapOrder = new BootstrapOrder(orderRepository,userRepository);
-        bootstrapOrder.loadData();
+        bootstrapUsersAndOrders = new BootstrapUsersAndOrders(orderRepository,userRepository);
+        bootstrapUsersAndOrders.loadData();
 
         userService = new UserServiceImpl(userRepository);
         orderService = new OrderServiceImpl(orderRepository, userService);
-        DB_DEFAULT_ORDER_COUNT = bootstrapOrder.getOrders().size();
+        DB_DEFAULT_ORDER_COUNT = bootstrapUsersAndOrders.getOrders().size();
     }
 
     @Test
     void getAllOrders() {
         //given
-        List<String> dbOrderIdList = bootstrapOrder.getOrders().stream()
+        List<String> dbOrderIdList = bootstrapUsersAndOrders.getOrders().stream()
                 .map(Order::getOrderId).toList();
         //when
         List<OrderDto> orderDtos = orderService.getAllOrders();
@@ -107,7 +107,7 @@ class OrderServiceImplIT {
     @Test
     void deleteOrderByOrderId() {
         //given
-        long dbUser1OrderIdListSize = bootstrapOrder.getUser1_orders().size();
+        long dbUser1OrderIdListSize = bootstrapUsersAndOrders.getUser1_orders().size();
         //when
         orderService.deleteOrderByOrderId(DB_ORDER_ID1);
         long currentUser1OrderIdListSize = userService.getUserDtoByLogin(DB_USER_LOGIN).getOrderIdList().size();

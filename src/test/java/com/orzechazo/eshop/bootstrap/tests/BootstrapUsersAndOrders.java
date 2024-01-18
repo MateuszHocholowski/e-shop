@@ -13,11 +13,11 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class BootstrapOrder {
+public class BootstrapUsersAndOrders {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
-    public BootstrapOrder(OrderRepository orderRepository, UserRepository userRepository) {
+    public BootstrapUsersAndOrders(OrderRepository orderRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
     }
