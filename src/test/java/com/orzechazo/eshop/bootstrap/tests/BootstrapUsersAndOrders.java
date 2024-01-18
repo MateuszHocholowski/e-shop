@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +31,7 @@ public class BootstrapUsersAndOrders {
     public static final String DB_USER_LOGIN = "user1";
     private List<Order> orders;
     private List<Order> user1_orders;
+    private List<User> users = new ArrayList<>();
 
     public void loadData() {
 
@@ -89,6 +91,8 @@ public class BootstrapUsersAndOrders {
         user2.addOrder(order4);
         userRepository.save(user2);
 
+        users = List.of(user1, user2);
+
     }
     public List<Order> getOrders() {
         return orders;
@@ -96,5 +100,9 @@ public class BootstrapUsersAndOrders {
 
     public List<Order> getUser1_orders() {
         return user1_orders;
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 }
