@@ -2,9 +2,11 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
+import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
+import com.orzechazo.eshop.mappers.OrderMapper;
 import com.orzechazo.eshop.mappers.UserMapper;
 import com.orzechazo.eshop.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
+    private final OrderMapper orderMapper = OrderMapper.INSTANCE;
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -30,6 +33,13 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto getUserDtoByLogin(String login) {
         return userMapper.userToUserDto(getUserByLogin(login));
+    }
+    @Override
+    public List<OrderDto> getOrdersByUser(String userLogin) {
+        User returnedUser = getUserByLogin(userLogin);
+        return returnedUser.getOrders().stream()
+                .map(orderMapper::orderToOrderDto)
+                .toList();
     }
 
     @Override

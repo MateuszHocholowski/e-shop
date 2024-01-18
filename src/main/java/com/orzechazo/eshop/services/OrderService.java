@@ -8,7 +8,6 @@ public interface OrderService {
 
     List<OrderDto> getAllOrders();
     OrderDto getOrderDtoByOrderId(String orderId);
-    List<OrderDto> getOrdersByUser(String userLogin);
     OrderDto createOrder(OrderDto orderDto);
     void deleteOrderByOrderId(String orderId);
 

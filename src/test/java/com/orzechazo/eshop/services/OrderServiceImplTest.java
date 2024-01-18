@@ -2,7 +2,6 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.dto.OrderDto;
-import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.OrderRepository;
@@ -65,26 +64,6 @@ class OrderServiceImplTest {
     void getOrderByOrderIdBadRequest() {
         Exception exception = assertThrows(ResourceNotFoundException.class,()-> orderService.getOrderDtoByOrderId(ORDER_ID));
         assertEquals("Order with id: 1 doesn't exist in database.", exception.getMessage());
-    }
-    @Test
-    void getOrdersByUser() {
-        //given
-        Order order1 = new Order();
-        order1.setOrderId("order1");
-        order1.setTotalPrice(PRICE);
-        Order order2 = new Order();
-        order2.setOrderId("order2");
-        order2.setTotalPrice(PRICE);
-        UserDto userDto = UserDto.builder().login("login1")
-                .orderIdList(List.of(order1.getOrderId(),order2.getOrderId())).build();
-        when(userService.getUserDtoByLogin(anyString())).thenReturn(userDto);
-        when(orderRepository.findByOrderId("order1")).thenReturn(Optional.of(order1));
-        when(orderRepository.findByOrderId("order2")).thenReturn(Optional.of(order2));
-        //when
-        List<OrderDto> returnedDtos = orderService.getOrdersByUser("login1");
-        //then
-        assertEquals(2,returnedDtos.size());
-        assertEquals(PRICE,returnedDtos.get(0).getTotalPrice());
     }
 
     @Test
