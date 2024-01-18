@@ -25,9 +25,7 @@ public class User extends BaseEntity{
     private Basket basket;
 
     public void addOrder(Order order) {
-        if (order != null && !orders.contains(order)) {
             orders.add(order);
             order.setUser(this);
-        }
     }
 }

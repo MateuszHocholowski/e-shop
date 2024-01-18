@@ -10,7 +10,7 @@ public class UserDto {
 
     String login;
     String password;
-    List<OrderDto> orders;
+    List<String> orderIdList;
     List<ProductDto> favouriteProducts;
     BasketDto basket;
 

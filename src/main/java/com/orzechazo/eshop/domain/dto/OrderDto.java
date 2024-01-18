@@ -17,5 +17,5 @@ public class OrderDto {
     LocalDateTime paymentDate;
     LocalDateTime realizationDate;
     BigDecimal totalPrice;
-    UserDto user;
+    String userLogin;
 }
