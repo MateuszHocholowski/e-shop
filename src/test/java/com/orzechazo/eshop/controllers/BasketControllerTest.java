@@ -39,7 +39,7 @@ class BasketControllerTest {
     @Test
     void getBasketByBasketId() throws Exception{
         BasketDto basketDto = BasketDto.builder().basketId(BASKET_ID).build();
-        when(basketService.getBasketByBasketId(any())).thenReturn(basketDto);
+        when(basketService.getBasketDtoByBasketId(any())).thenReturn(basketDto);
 
         mockMvc.perform(get("/baskets/1")
                 .contentType(MediaType.APPLICATION_JSON))

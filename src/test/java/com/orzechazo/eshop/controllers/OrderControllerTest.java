@@ -55,23 +55,12 @@ class OrderControllerTest {
     @Test
     void getOrderByOrderId() throws Exception {
         OrderDto orderDto = OrderDto.builder().orderId(ORDER_ID).build();
-        when(orderService.getOrderByOrderId(anyString())).thenReturn(orderDto);
+        when(orderService.getOrderDtoByOrderId(anyString())).thenReturn(orderDto);
 
         mockMvc.perform(get("/orders/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orderId",equalTo(ORDER_ID)));
-    }
-
-    @Test
-    void getOrdersByUser() throws Exception {
-        List<OrderDto> orderDtos = List.of(OrderDto.builder().build(), OrderDto.builder().build());
-        when(orderService.getOrdersByUser(any())).thenReturn(orderDtos);
-
-        mockMvc.perform(get("/orders/user/testLogin")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(2)));
     }
 
     @Test
@@ -84,18 +73,6 @@ class OrderControllerTest {
                 .content(writer.writeValueAsString(orderDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.orderId",equalTo(ORDER_ID)));
-    }
-
-    @Test
-    void updateOrder() throws Exception {
-        OrderDto orderDto = OrderDto.builder().orderId(ORDER_ID).build();
-        when(orderService.updateOrder(any(),any())).thenReturn(orderDto);
-
-        mockMvc.perform(post("/orders/update/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(writer.writeValueAsString(orderDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderId", equalTo(ORDER_ID)));
     }
 
     @Test

@@ -16,7 +16,7 @@ public class BasketController {
     @GetMapping("/{basketId}")
     @ResponseStatus(HttpStatus.OK)
     public BasketDto getBasketByBasketId(@PathVariable String basketId) {
-        return basketService.getBasketByBasketId(basketId);
+        return basketService.getBasketDtoByBasketId(basketId);
     }
     @PutMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)

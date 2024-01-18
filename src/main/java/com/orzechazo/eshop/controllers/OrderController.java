@@ -24,22 +24,12 @@ public class OrderController {
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public OrderDto getOrderByOrderId(@PathVariable String orderId) {
-        return orderService.getOrderByOrderId(orderId);
-    }
-    @GetMapping("/user/{login}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> getOrdersByUser(@PathVariable String login) {
-        return orderService.getOrdersByUser(login);
+        return orderService.getOrderDtoByOrderId(orderId);
     }
     @PutMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDto createOrder(@RequestBody OrderDto orderDto) {
         return orderService.createOrder(orderDto);
-    }
-    @PostMapping("/update/{orderId}")
-    @ResponseStatus(HttpStatus.OK)
-    public OrderDto updateOrder(@PathVariable String orderId, @RequestBody OrderDto orderDto) {
-        return orderService.updateOrder(orderId,orderDto);
     }
     @DeleteMapping("/delete/{orderId}")
     @ResponseStatus(HttpStatus.OK)
