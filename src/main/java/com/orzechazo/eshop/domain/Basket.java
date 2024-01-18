@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Entity
+@Entity(name = "BASKETS")
 public class Basket extends BaseEntity{
 
     @Column(unique = true)
