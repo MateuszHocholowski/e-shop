@@ -1,5 +1,6 @@
 package com.orzechazo.eshop.controllers;
 
+import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public UserDto getUserByLogin(@PathVariable String login) {
         return userService.getUserDtoByLogin(login);
+    }
+    @GetMapping("/{login}/orders")
+    @ResponseStatus(HttpStatus.OK)
+    public List<OrderDto> getOrdersByUser(@PathVariable String login) {
+        return userService.getOrdersByUser(login);
     }
     @PutMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)

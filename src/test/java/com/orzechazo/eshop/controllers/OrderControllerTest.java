@@ -64,17 +64,6 @@ class OrderControllerTest {
     }
 
     @Test
-    void getOrdersByUser() throws Exception {
-        List<OrderDto> orderDtos = List.of(OrderDto.builder().build(), OrderDto.builder().build());
-        when(orderService.getOrdersByUser(any())).thenReturn(orderDtos);
-
-        mockMvc.perform(get("/orders/user/testLogin")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(2)));
-    }
-
-    @Test
     void createOrder() throws Exception {
         OrderDto orderDto = OrderDto.builder().orderId(ORDER_ID).build();
         when(orderService.createOrder(any())).thenReturn(orderDto);

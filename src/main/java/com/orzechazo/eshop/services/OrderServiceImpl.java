@@ -2,7 +2,6 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.dto.OrderDto;
-import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.OrderMapper;
 import com.orzechazo.eshop.repositories.OrderRepository;
@@ -33,14 +32,6 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public OrderDto getOrderDtoByOrderId(String orderId) {
         return orderMapper.orderToOrderDto(getOrderByOrderId(orderId));
-    }
-
-    @Override
-    public List<OrderDto> getOrdersByUser(String userLogin) {
-        UserDto returnedUserDto = userService.getUserDtoByLogin(userLogin);
-        return returnedUserDto.getOrderIdList().stream()
-                .map(this::getOrderDtoByOrderId)
-                .toList();  //todo change method to call DB once for user
     }
 
     @Override
