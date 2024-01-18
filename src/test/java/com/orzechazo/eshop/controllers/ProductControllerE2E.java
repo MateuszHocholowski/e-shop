@@ -35,8 +35,9 @@ class ProductControllerE2ETests {
     @Autowired
     private ProductRepository productRepository;
     MockMvc mockMvc;
-    private int REPO_SIZE;
+    private int DB_DEFAULT_PRODUCTS_SIZE;
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    private final static String DB_PRODUCT_NAME = BootstrapProduct.DB_PRODUCT1_NAME;
     @BeforeEach
     void setUp() {
         BootstrapProduct bootstrapProduct = new BootstrapProduct(productRepository);
@@ -45,20 +46,21 @@ class ProductControllerE2ETests {
         ProductServiceImpl productService = new ProductServiceImpl(productRepository);
         ProductController productController = new ProductController(productService);
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
-        REPO_SIZE = (int) productRepository.count();
+        DB_DEFAULT_PRODUCTS_SIZE = bootstrapProduct.getProducts().size();
     }
 
     @Test
     void getAllProducts() throws Exception {
         mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(REPO_SIZE)));
+                .andExpect(jsonPath("$",hasSize(DB_DEFAULT_PRODUCTS_SIZE)));
     }
 
     @Test
     void getProductByName() throws Exception {
-        mockMvc.perform(get("/products/product1"))
+        mockMvc.perform(get("/products/" + DB_PRODUCT_NAME))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name",equalTo(DB_PRODUCT_NAME)))
                 .andExpect(jsonPath("$.amount",equalTo(5)))
                 .andExpect(jsonPath("$.netPrice",is(new BigDecimal("1.5").doubleValue())))
                 .andExpect(jsonPath("$.grossPrice",is(new BigDecimal("3.1").doubleValue())))
@@ -67,57 +69,76 @@ class ProductControllerE2ETests {
 
     @Test
     void getProductByNameNotFound() throws Exception {
-        mockMvc.perform(get("/products/test"))
+        mockMvc.perform(get("/products/productNotInDb"))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("Product: test doesn't exist in database.",
+                .andExpect(result -> assertEquals("Product: productNotInDb doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
     @Test
     void createProduct() throws Exception{
-        ProductDto productDto = ProductDto.builder().name("testName").amount(3)
+        ProductDto newProduct = ProductDto.builder().name("newProduct").amount(3)
                 .netPrice(new BigDecimal("1.2")).build();
         mockMvc.perform(put("/products/new")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(writer.writeValueAsString(productDto)))
+                        .content(writer.writeValueAsString(newProduct)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name",equalTo("testName")))
+                .andExpect(jsonPath("$.name",equalTo("newProduct")))
                 .andExpect(jsonPath("$.netPrice",is(new BigDecimal("1.2").doubleValue())))
                 .andExpect(jsonPath("$.amount",equalTo(3)))
-                .andExpect(result -> assertEquals(REPO_SIZE+1,productRepository.count()));
+                .andExpect(result -> assertEquals(DB_DEFAULT_PRODUCTS_SIZE +1,productRepository.count()));
     }
 
     @Test
-    void createProductExistingName() throws Exception {
-        ProductDto productDto = ProductDto.builder().name("product2").build();
+    void testCreateProductTwice() throws Exception {
+        ProductDto newProduct = ProductDto.builder().name("newProduct").amount(3)
+                .netPrice(new BigDecimal("1.2")).build();
+
+        mockMvc.perform(put("/products/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writer.writeValueAsString(newProduct)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(put("/products/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writer.writeValueAsString(newProduct)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
+                .andExpect(result -> assertEquals("Product: newProduct is already in database.",
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
+    }
+
+    @Test
+    void createProductWithNameAlreadyInDB() throws Exception {
+        ProductDto productDto = ProductDto.builder().name(DB_PRODUCT_NAME).build();
 
         mockMvc.perform(put("/products/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(productDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
-                .andExpect(result -> assertEquals("Product: product2 is already in database.",
+                .andExpect(result -> assertEquals("Product: "+ DB_PRODUCT_NAME + " is already in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
     void updateProduct() throws Exception {
-        ProductDto productToUpdate = ProductDto.builder().name("product3")
+        ProductDto productToUpdate = ProductDto.builder().name(DB_PRODUCT_NAME)
                 .amount(2).description("updatedDescription").build();
 
         mockMvc.perform(post("/products/update/" + productToUpdate.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(productToUpdate)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name",equalTo("product3")))
+                .andExpect(jsonPath("$.name",equalTo(DB_PRODUCT_NAME)))
                 .andExpect(jsonPath("$.amount",equalTo(2)))
                 .andExpect(jsonPath("$.description",equalTo("updatedDescription")))
-                .andExpect(result -> assertEquals(REPO_SIZE,productRepository.count()));
+                .andExpect(result -> assertEquals(DB_DEFAULT_PRODUCTS_SIZE,productRepository.count()));
     }
 
     @Test
     void updateProductNotFound() throws Exception {
-        ProductDto productToUpdate = ProductDto.builder().name("test").build();
+        ProductDto productToUpdate = ProductDto.builder().name("productNotInDb").build();
 
         mockMvc.perform(post("/products/update/" + productToUpdate.getName())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -125,14 +146,14 @@ class ProductControllerE2ETests {
                 .param("name","test"))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("Product: test doesn't exist in database.",
+                .andExpect(result -> assertEquals("Product: productNotInDb doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
     void deleteProduct() throws Exception{
-        mockMvc.perform(delete("/products/delete/product2"))
+        mockMvc.perform(delete("/products/delete/" + DB_PRODUCT_NAME))
                 .andExpect(status().isOk())
-                .andExpect(result -> assertEquals(REPO_SIZE-1,productRepository.count()));
+                .andExpect(result -> assertEquals(DB_DEFAULT_PRODUCTS_SIZE -1,productRepository.count()));
     }
 }
