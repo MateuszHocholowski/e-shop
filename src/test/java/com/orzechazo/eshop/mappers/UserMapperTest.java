@@ -124,15 +124,18 @@ class UserMapperTest {
     @Test
     void ordersToOrderIdList() {
         //given
-        String orderId1 = "order1";
-        String orderId2 = "order2";
-        String orderId3 = "order3";
         Order order1 = new Order();
+        String orderId1 = "order1";
         order1.setOrderId(orderId1);
+
         Order order2 = new Order();
+        String orderId2 = "order2";
         order2.setOrderId(orderId2);
+
         Order order3 = new Order();
+        String orderId3 = "order3";
         order3.setOrderId(orderId3);
+
         User user = new User();
         user.setOrders(List.of(order1,order2,order3));
         List<String> ordersNameList = List.of(orderId1,orderId2,orderId3);

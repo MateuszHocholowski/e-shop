@@ -128,7 +128,7 @@ class UserServiceImplTest {
         Order returnedOrder = userService.addOrder("login",order);
         //then
         assertEquals("login",returnedOrder.getUser().getLogin());
-        assertEquals("order1", user.getOrders().get(0).getOrderId());
+        assertThat(user.getOrders()).containsExactlyInAnyOrderElementsOf(List.of(order));
     }
 
     @Test

@@ -40,7 +40,7 @@ public class OrderServiceImpl implements OrderService{
         UserDto returnedUserDto = userService.getUserDtoByLogin(userLogin);
         return returnedUserDto.getOrderIdList().stream()
                 .map(this::getOrderDtoByOrderId)
-                .toList();
+                .toList();  //todo change method to call DB once for user
     }
 
     @Override
