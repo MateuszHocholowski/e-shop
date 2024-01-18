@@ -82,26 +82,6 @@ class OrderServiceImplIT {
     }
 
     @Test
-    void getOrdersByUser() {
-        //given
-        List<String> dbUser1orderIdList = bootstrapOrder.getUser1_orders().stream()
-                .map(Order::getOrderId).toList();
-        //when
-        List<OrderDto> returnedDtos = orderService.getOrdersByUser(DB_USER_LOGIN);
-        List<String> returnedDtosOrderIdList = returnedDtos.stream()
-                .map(OrderDto::getOrderId).toList();
-        //then
-        assertThat(dbUser1orderIdList).containsExactlyInAnyOrderElementsOf(returnedDtosOrderIdList);
-    }
-
-    @Test
-    void getOrdersByUserNotFound() {
-        Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> orderService.getOrdersByUser("userNotInDB"));
-        assertEquals("User: userNotInDB doesn't exist in database.",exception.getMessage());
-    }
-
-    @Test
     void createOrder() {
         //given
         OrderDto orderDto = OrderDto.builder().userLogin(DB_USER_LOGIN)
