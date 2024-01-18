@@ -26,11 +26,6 @@ public class OrderController {
     public OrderDto getOrderByOrderId(@PathVariable String orderId) {
         return orderService.getOrderDtoByOrderId(orderId);
     }
-    @GetMapping("/user/{login}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> getOrdersByUser(@PathVariable String login) {
-        return orderService.getOrdersByUser(login);
-    }
     @PutMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDto createOrder(@RequestBody OrderDto orderDto) {
