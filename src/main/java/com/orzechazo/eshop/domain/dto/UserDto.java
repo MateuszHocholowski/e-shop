@@ -1,7 +1,5 @@
 package com.orzechazo.eshop.domain.dto;
 
-import com.orzechazo.eshop.domain.Order;
-import com.orzechazo.eshop.domain.Product;
 import lombok.*;
 
 import java.util.List;
@@ -12,7 +10,7 @@ public class UserDto {
 
     String login;
     String password;
-    List<OrderDto> orders;
+    List<String> orderIdList;
     List<ProductDto> favouriteProducts;
     BasketDto basket;
 

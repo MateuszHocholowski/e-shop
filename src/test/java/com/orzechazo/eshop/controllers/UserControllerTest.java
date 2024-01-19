@@ -2,6 +2,7 @@ package com.orzechazo.eshop.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,16 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login",equalTo("test")));
     }
+    @Test
+    void getOrdersByUser() throws Exception {
+        List<OrderDto> orderDtos = List.of(OrderDto.builder().build(), OrderDto.builder().build());
+        when(userService.getOrdersByUser(any())).thenReturn(orderDtos);
+
+        mockMvc.perform(get("/users/testLogin/orders")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(2)));
+    }
 
     @Test
     void createNewUser() throws Exception {
@@ -80,7 +91,8 @@ class UserControllerTest {
 
         mockMvc.perform(post("/users/test/update")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(userDto)))
+                .content(writer.writeValueAsString(userDto))
+                .param("login","test"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login",equalTo("test")));
     }

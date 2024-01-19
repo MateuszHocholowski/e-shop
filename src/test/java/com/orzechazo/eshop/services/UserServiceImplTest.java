@@ -1,6 +1,8 @@
 package com.orzechazo.eshop.services;
 
+import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
+import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
@@ -14,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -60,6 +63,26 @@ class UserServiceImplTest {
     void getUserByLoginNotFound() {
         Exception exception = assertThrows(ResourceNotFoundException.class,() -> userService.getUserDtoByLogin("test"));
         assertEquals("User: test doesn't exist in database.",exception.getMessage());
+    }
+    @Test
+    void getOrdersByUser() {
+        //given
+        Order order1 = new Order();
+        order1.setOrderId("order1");
+        Order order2 = new Order();
+        order2.setOrderId("order2");
+        User user = new User();
+        user.setLogin("login1");
+        user.setOrders(List.of(order1,order2));
+        List<String> orderIds = user.getOrders().stream().map(Order::getOrderId).toList();
+        when(userRepository.findByLogin(anyString())).thenReturn(Optional.of(user));
+        //when
+        List<OrderDto> returnedDtos = userService.getOrdersByUser("login1");
+        List<String> returnedDtosOrderIds = returnedDtos.stream().map(OrderDto::getOrderId).toList();
+        //then
+        assertEquals(2,returnedDtos.size());
+        assertThat(returnedDtosOrderIds).containsExactlyInAnyOrderElementsOf(orderIds);
+
     }
 
     @Test
@@ -114,6 +137,34 @@ class UserServiceImplTest {
         //then
         assertEquals("User: login1 doesn't exist in database.",exception.getMessage());
         verify(userRepository,times(0)).save(any());
+    }
+
+    @Test
+    void addOrder() {
+        User user = new User();
+        user.setLogin("login");
+        Order order = new Order();
+        order.setOrderId("order1");
+        when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
+        //when
+        Order returnedOrder = userService.addOrder("login",order);
+        //then
+        assertEquals("login",returnedOrder.getUser().getLogin());
+        assertThat(user.getOrders()).containsExactlyInAnyOrderElementsOf(List.of(order));
+    }
+
+    @Test
+    void deleteOrder() {
+        User user = new User();
+        user.setLogin("login");
+        Order order = new Order();
+        user.addOrder(order);
+        when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
+        //when
+        userService.deleteOrder(order);
+        //then
+        assertThat(user.getOrders()).isEmpty();
+        verify(userRepository,times(1)).save(any());
     }
 
     @Test
