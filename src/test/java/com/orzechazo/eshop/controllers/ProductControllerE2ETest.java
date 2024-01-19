@@ -3,6 +3,7 @@ package com.orzechazo.eshop.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.orzechazo.eshop.bootstrap.tests.BootstrapProduct;
+import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.ProductDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.Matchers.*;
@@ -38,22 +40,25 @@ class ProductControllerE2ETest {
     private int DB_DEFAULT_PRODUCTS_SIZE;
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private final static String DB_PRODUCT_NAME = BootstrapProduct.DB_PRODUCT1_NAME;
+    BootstrapProduct bootstrap;
     @BeforeEach
     void setUp() {
-        BootstrapProduct bootstrapProduct = new BootstrapProduct(productRepository);
-        bootstrapProduct.loadData();
+        bootstrap = new BootstrapProduct(productRepository);
+        bootstrap.loadData();
 
         ProductServiceImpl productService = new ProductServiceImpl(productRepository);
         ProductController productController = new ProductController(productService);
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
-        DB_DEFAULT_PRODUCTS_SIZE = bootstrapProduct.getProducts().size();
+        DB_DEFAULT_PRODUCTS_SIZE = bootstrap.getProducts().size();
     }
 
     @Test
     void getAllProducts() throws Exception {
+        List<String> DB_PRODUCT_NAMES_LIST = bootstrap.getProducts().stream().map(Product::getName).toList();
         mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(DB_DEFAULT_PRODUCTS_SIZE)));
+                .andExpect(jsonPath("$",hasSize(DB_DEFAULT_PRODUCTS_SIZE)))
+                .andExpect(jsonPath("$[*].name").value(containsInAnyOrder(DB_PRODUCT_NAMES_LIST.toArray())));
     }
 
     @Test
