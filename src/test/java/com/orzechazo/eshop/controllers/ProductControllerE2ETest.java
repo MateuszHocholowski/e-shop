@@ -90,8 +90,9 @@ class ProductControllerE2ETest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name",equalTo("newProduct")))
                 .andExpect(jsonPath("$.netPrice",is(new BigDecimal("1.2").doubleValue())))
-                .andExpect(jsonPath("$.amount",equalTo(3)))
-                .andExpect(result -> assertEquals(DB_DEFAULT_PRODUCTS_SIZE +1,productRepository.count()));
+                .andExpect(jsonPath("$.amount",equalTo(3)));
+
+        assertEquals(DB_DEFAULT_PRODUCTS_SIZE +1,productRepository.count());
     }
 
     @Test
@@ -137,8 +138,9 @@ class ProductControllerE2ETest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name",equalTo(DB_PRODUCT_NAME)))
                 .andExpect(jsonPath("$.amount",equalTo(2)))
-                .andExpect(jsonPath("$.description",equalTo("updatedDescription")))
-                .andExpect(result -> assertEquals(DB_DEFAULT_PRODUCTS_SIZE,productRepository.count()));
+                .andExpect(jsonPath("$.description",equalTo("updatedDescription")));
+
+        assertEquals(DB_DEFAULT_PRODUCTS_SIZE,productRepository.count());
     }
 
     @Test
@@ -158,7 +160,8 @@ class ProductControllerE2ETest {
     @Test
     void deleteProduct() throws Exception{
         mockMvc.perform(delete("/products/delete/" + DB_PRODUCT_NAME))
-                .andExpect(status().isOk())
-                .andExpect(result -> assertEquals(DB_DEFAULT_PRODUCTS_SIZE -1,productRepository.count()));
+                .andExpect(status().isOk());
+
+        assertEquals(DB_DEFAULT_PRODUCTS_SIZE -1,productRepository.count());
     }
 }
