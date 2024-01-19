@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders;
 import com.orzechazo.eshop.domain.Order;
+import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
@@ -44,10 +45,11 @@ class UserControllerE2ETest {
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private static int DEFAULT_DB_USER_COUNT;
     private List<String> DB_USER1_ORDER_ID_LIST;
+    BootstrapUsersAndOrders bootstrap;
 
     @BeforeEach
     void setUp() {
-        BootstrapUsersAndOrders bootstrap = new BootstrapUsersAndOrders(orderRepository, userRepository);
+        bootstrap = new BootstrapUsersAndOrders(orderRepository, userRepository);
         bootstrap.loadData();
 
         UserServiceImpl userService = new UserServiceImpl(userRepository);
@@ -59,11 +61,12 @@ class UserControllerE2ETest {
 
     @Test
     void getAllUsers() throws Exception {
+        List<String> DB_USERS_LOGINS_LIST = bootstrap.getUsers().stream().map(User::getLogin).toList();
         mockMvc.perform(get("/users")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(DEFAULT_DB_USER_COUNT)))
-                .andExpect(jsonPath("$[0].orderIdList", equalTo(DB_USER1_ORDER_ID_LIST)));
+                .andExpect(jsonPath("$[*].login").value(containsInAnyOrder(DB_USERS_LOGINS_LIST.toArray())));
     }
 
     @Test
@@ -73,7 +76,8 @@ class UserControllerE2ETest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login",equalTo(DB_USER_LOGIN)))
                 .andExpect(jsonPath("$.password",nullValue()))
-                .andExpect(jsonPath("$.orderIdList",equalTo(DB_USER1_ORDER_ID_LIST)));
+                .andExpect(jsonPath("$.orderIdList")
+                        .value(containsInAnyOrder(DB_USER1_ORDER_ID_LIST.toArray())));
     }
 
     @Test
@@ -88,12 +92,11 @@ class UserControllerE2ETest {
 
     @Test
     void getOrdersByUser() throws Exception {
-        int lastId = DB_USER1_ORDER_ID_LIST.size() -1;
         mockMvc.perform(get("/users/" + DB_USER_LOGIN + "/orders")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].orderId",in(DB_USER1_ORDER_ID_LIST)))
-                .andExpect(jsonPath("$[" + lastId + "].orderId",in(DB_USER1_ORDER_ID_LIST)));
+                .andExpect(jsonPath("$[*].orderId")
+                        .value(containsInAnyOrder(DB_USER1_ORDER_ID_LIST.toArray())));
     }
 
     @Test
@@ -105,8 +108,9 @@ class UserControllerE2ETest {
                 .content(writer.writeValueAsString(newUser)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.login",equalTo("newUser")))
-                .andExpect(jsonPath("$.password",nullValue()))
-                .andExpect(result -> assertEquals(DEFAULT_DB_USER_COUNT+1,userRepository.count()));
+                .andExpect(jsonPath("$.password",nullValue()));
+
+        assertEquals(DEFAULT_DB_USER_COUNT+1,userRepository.count());
     }
 
     @Test
@@ -114,13 +118,13 @@ class UserControllerE2ETest {
         UserDto newUser = UserDto.builder().login("newUser")
                 .password("testPassword").build();
         mockMvc.perform(put("/users/new")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(writer.writeValueAsString(newUser)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writer.writeValueAsString(newUser)))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(put("/users/new")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(writer.writeValueAsString(newUser)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writer.writeValueAsString(newUser)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
                 .andExpect(result -> assertEquals("User: newUser is already in database.",
@@ -148,8 +152,9 @@ class UserControllerE2ETest {
                 .param("login",DB_USER_LOGIN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login",equalTo(DB_USER_LOGIN)))
-                .andExpect(jsonPath("$.password",nullValue()))
-                .andExpect(result -> assertEquals(DEFAULT_DB_USER_COUNT,userRepository.count()));
+                .andExpect(jsonPath("$.password",nullValue()));
+
+        assertEquals(DEFAULT_DB_USER_COUNT,userRepository.count());
     }
 
     @Test
@@ -168,7 +173,8 @@ class UserControllerE2ETest {
     @Test
     void deleteUser() throws Exception {
         mockMvc.perform(delete("/users/"+ DB_USER_LOGIN + "/delete"))
-                .andExpect(status().isOk())
-                .andExpect(result -> assertEquals(DEFAULT_DB_USER_COUNT-1,userRepository.count()));
+                .andExpect(status().isOk());
+
+        assertEquals(DEFAULT_DB_USER_COUNT-1,userRepository.count());
     }
 }
