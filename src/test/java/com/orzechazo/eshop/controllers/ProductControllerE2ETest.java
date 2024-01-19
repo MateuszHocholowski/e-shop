@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class ProductControllerE2ETests {
+class ProductControllerE2ETest {
     @Autowired
     private ProductRepository productRepository;
     MockMvc mockMvc;
@@ -95,13 +95,13 @@ class ProductControllerE2ETests {
                 .netPrice(new BigDecimal("1.2")).build();
 
         mockMvc.perform(put("/products/new")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(newProduct)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(writer.writeValueAsString(newProduct)))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(put("/products/new")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(newProduct)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(writer.writeValueAsString(newProduct)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
                 .andExpect(result -> assertEquals("Product: newProduct is already in database.",
@@ -113,8 +113,8 @@ class ProductControllerE2ETests {
         ProductDto productDto = ProductDto.builder().name(DB_PRODUCT_NAME).build();
 
         mockMvc.perform(put("/products/new")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(productDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(writer.writeValueAsString(productDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
                 .andExpect(result -> assertEquals("Product: "+ DB_PRODUCT_NAME + " is already in database.",
@@ -127,8 +127,8 @@ class ProductControllerE2ETests {
                 .amount(2).description("updatedDescription").build();
 
         mockMvc.perform(post("/products/update/" + productToUpdate.getName())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(productToUpdate)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(writer.writeValueAsString(productToUpdate)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name",equalTo(DB_PRODUCT_NAME)))
                 .andExpect(jsonPath("$.amount",equalTo(2)))
@@ -141,9 +141,9 @@ class ProductControllerE2ETests {
         ProductDto productToUpdate = ProductDto.builder().name("productNotInDb").build();
 
         mockMvc.perform(post("/products/update/" + productToUpdate.getName())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(productToUpdate))
-                .param("name","test"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(writer.writeValueAsString(productToUpdate))
+                        .param("name","test"))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
                 .andExpect(result -> assertEquals("Product: productNotInDb doesn't exist in database.",
