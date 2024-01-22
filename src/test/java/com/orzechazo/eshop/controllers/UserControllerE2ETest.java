@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import java.util.Objects;
 
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.DB_USER_LOGIN;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,16 +37,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserControllerE2ETest {
 
+    private static final String USER_LOGIN_NOT_IN_DB = "userNotInDb";
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private OrderRepository orderRepository;
-    MockMvc mockMvc;
-    private final static String DB_USER_LOGIN = BootstrapUsersAndOrders.DB_USER_LOGIN;
+    private MockMvc mockMvc;
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private static int DEFAULT_DB_USER_COUNT;
     private List<String> DB_USER1_ORDER_ID_LIST;
-    BootstrapUsersAndOrders bootstrap;
+    private BootstrapUsersAndOrders bootstrap;
 
     @BeforeEach
     void setUp() {
@@ -82,11 +83,11 @@ class UserControllerE2ETest {
 
     @Test
     void getUserByLoginNotFound() throws Exception {
-        mockMvc.perform(get("/users/userNotInDb")
+        mockMvc.perform(get("/users/" + USER_LOGIN_NOT_IN_DB)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("User: userNotInDb doesn't exist in database.",
+                .andExpect(result -> assertEquals("User: " + USER_LOGIN_NOT_IN_DB + " doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
@@ -103,6 +104,7 @@ class UserControllerE2ETest {
     void createNewUser() throws Exception {
         UserDto newUser = UserDto.builder().login("newUser")
                 .password("testPassword").build();
+
         mockMvc.perform(put("/users/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(newUser)))
@@ -117,6 +119,7 @@ class UserControllerE2ETest {
     void testCreateNewUserTwice() throws Exception{
         UserDto newUser = UserDto.builder().login("newUser")
                 .password("testPassword").build();
+
         mockMvc.perform(put("/users/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(newUser)))
@@ -159,14 +162,14 @@ class UserControllerE2ETest {
 
     @Test
     void updateUserNotFound() throws Exception {
-        UserDto userDto = UserDto.builder().login("userNotInDb").build();
+        UserDto userDto = UserDto.builder().login(USER_LOGIN_NOT_IN_DB).build();
         mockMvc.perform(post("/users/test/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(userDto))
-                .param("login","userNotInDb"))
+                .param("login", USER_LOGIN_NOT_IN_DB))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("User: userNotInDb doesn't exist in database.",
+                .andExpect(result -> assertEquals("User: " + USER_LOGIN_NOT_IN_DB + " doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
