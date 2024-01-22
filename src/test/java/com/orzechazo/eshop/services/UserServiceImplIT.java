@@ -58,6 +58,11 @@ class UserServiceImplIT {
         UserDto returnedDto = userService.getUserDtoByLogin(DB_USER_LOGIN);
 
         assertEquals("user1",returnedDto.getLogin());
+    }
+    @Test
+    void shouldNotMapUsersPassword() {
+        UserDto returnedDto = userService.getUserDtoByLogin(DB_USER_LOGIN);
+
         assertNull(returnedDto.getPassword());
     }
 
