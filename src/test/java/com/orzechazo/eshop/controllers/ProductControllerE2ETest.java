@@ -34,13 +34,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ProductControllerE2ETest {
+    public static final String PRODUCT_NAME_NOT_IN_DB = "productNotInDb";
     @Autowired
     private ProductRepository productRepository;
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     private int DB_DEFAULT_PRODUCTS_SIZE;
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private final static String DB_PRODUCT_NAME = BootstrapProduct.DB_PRODUCT1_NAME;
-    BootstrapProduct bootstrap;
+    private BootstrapProduct bootstrap;
     @BeforeEach
     void setUp() {
         bootstrap = new BootstrapProduct(productRepository);
@@ -74,10 +75,10 @@ class ProductControllerE2ETest {
 
     @Test
     void getProductByNameNotFound() throws Exception {
-        mockMvc.perform(get("/products/productNotInDb"))
+        mockMvc.perform(get("/products/" + PRODUCT_NAME_NOT_IN_DB))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("Product: productNotInDb doesn't exist in database.",
+                .andExpect(result -> assertEquals("Product: " + PRODUCT_NAME_NOT_IN_DB + " doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
     @Test
@@ -145,7 +146,7 @@ class ProductControllerE2ETest {
 
     @Test
     void updateProductNotFound() throws Exception {
-        ProductDto productToUpdate = ProductDto.builder().name("productNotInDb").build();
+        ProductDto productToUpdate = ProductDto.builder().name(PRODUCT_NAME_NOT_IN_DB).build();
 
         mockMvc.perform(post("/products/update/" + productToUpdate.getName())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -153,7 +154,7 @@ class ProductControllerE2ETest {
                         .param("name","test"))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("Product: productNotInDb doesn't exist in database.",
+                .andExpect(result -> assertEquals("Product: " + PRODUCT_NAME_NOT_IN_DB + " doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
