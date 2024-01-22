@@ -26,6 +26,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.DB_ORDER_ID1;
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.DB_USER_LOGIN;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,28 +38,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class OrderControllerE2ETest {
+    public static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
+    public static final String ORDER_ID_NOT_IN_DB = "orderIdNotInDB";
+    public static final String USER_LOGIN_NOT_IN_DB = "userNotInDb";
     @Autowired
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
     @Autowired
-    UserRepository userRepository;
-    OrderServiceImpl orderService;
-    UserServiceImpl userService;
-    OrderController orderController;
-    MockMvc mockMvc;
-    private static final String DB_ORDER_ID = BootstrapUsersAndOrders.DB_ORDER_ID1;
-    private static final String DB_USER_LOGIN = BootstrapUsersAndOrders.DB_USER_LOGIN;
+    private UserRepository userRepository;
+    private MockMvc mockMvc;
     private int DEFAULT_DB_ORDER_SIZE;
     private int DEFAULT_DB_USER1_ORDERS_SIZE;
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
-    BootstrapUsersAndOrders bootstrap;
+    private BootstrapUsersAndOrders bootstrap;
 
     @BeforeEach
     void setUp() {
         bootstrap = new BootstrapUsersAndOrders(orderRepository,userRepository);
         bootstrap.loadData();
-        userService = new UserServiceImpl(userRepository);
-        orderService = new OrderServiceImpl(orderRepository, userService);
-        orderController = new OrderController(orderService);
+        UserServiceImpl userService = new UserServiceImpl(userRepository);
+        OrderServiceImpl orderService = new OrderServiceImpl(orderRepository, userService);
+        OrderController orderController = new OrderController(orderService);
         mockMvc = MockMvcBuilders.standaloneSetup(orderController).build();
 
         DEFAULT_DB_ORDER_SIZE = bootstrap.getOrders().size();
@@ -78,24 +78,24 @@ class OrderControllerE2ETest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String DB_DATE_TIME = BootstrapUsersAndOrders.DATE_TIME.format(formatter);
 
-        mockMvc.perform(get("/orders/" + DB_ORDER_ID)
+        mockMvc.perform(get("/orders/" + DB_ORDER_ID1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderId",equalTo(DB_ORDER_ID)))
+                .andExpect(jsonPath("$.orderId",equalTo(DB_ORDER_ID1)))
                 .andExpect(jsonPath("$.orderDate").value(DB_DATE_TIME))
                 .andExpect(jsonPath("$.admissionDate",equalTo(DB_DATE_TIME)))
                 .andExpect(jsonPath("$.realizationDate", equalTo(DB_DATE_TIME)))
                 .andExpect(jsonPath("$.paymentDate",equalTo(DB_DATE_TIME)))
-                .andExpect(jsonPath("$.totalPrice",is(new BigDecimal("100").intValue())));
+                .andExpect(jsonPath("$.totalPrice",is(ORDER1_TOTAL_PRICE.intValue())));
     }
 
     @Test
     void getOrderByOrderIdThatIsNotInDB() throws Exception{
-        mockMvc.perform(get("/orders/orderIdNotInDB")
+        mockMvc.perform(get("/orders/" + ORDER_ID_NOT_IN_DB)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("Order with id: orderIdNotInDB doesn't exist in database.",
+                .andExpect(result -> assertEquals("Order with id: " + ORDER_ID_NOT_IN_DB + " doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
@@ -116,19 +116,19 @@ class OrderControllerE2ETest {
 
     @Test
     void testCreateOrderForUserThatIsNotInDB() throws Exception {
-        OrderDto newOrder = OrderDto.builder().userLogin("userNotInDb").build();
+        OrderDto newOrder = OrderDto.builder().userLogin(USER_LOGIN_NOT_IN_DB).build();
         mockMvc.perform(put("/orders/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(newOrder)))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("User: userNotInDb doesn't exist in database.",
+                .andExpect(result -> assertEquals("User:"+ USER_LOGIN_NOT_IN_DB + " doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
     void deleteOrderByOrderId() throws Exception{
-        mockMvc.perform(delete("/orders/delete/" + DB_ORDER_ID))
+        mockMvc.perform(delete("/orders/delete/" + DB_ORDER_ID1))
                 .andExpect(status().isOk());
 
         assertEquals(DEFAULT_DB_ORDER_SIZE-1, orderRepository.count());
