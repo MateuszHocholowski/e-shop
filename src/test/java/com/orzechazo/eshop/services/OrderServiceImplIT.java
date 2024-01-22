@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class OrderServiceImplIT {
 
+
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
@@ -36,6 +37,7 @@ class OrderServiceImplIT {
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2024,1,1,0,0);
     private static final String DB_USER_LOGIN = BootstrapUsersAndOrders.DB_USER_LOGIN;
     private static final String DB_ORDER_ID1 = BootstrapUsersAndOrders.DB_ORDER_ID1;
+    private static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
     private int DB_DEFAULT_ORDER_COUNT;
     private BootstrapUsersAndOrders bootstrapUsersAndOrders;
     @BeforeEach
@@ -55,10 +57,10 @@ class OrderServiceImplIT {
                 .map(Order::getOrderId).toList();
         //when
         List<OrderDto> orderDtos = orderService.getAllOrders();
-        List<String> orderDtosIdList = orderDtos.stream()
+        List<String> returnedDtosIdList = orderDtos.stream()
                 .map(OrderDto::getOrderId).toList();
         //then
-        assertThat(dbOrderIdList).containsExactlyInAnyOrderElementsOf(orderDtosIdList);
+        assertThat(returnedDtosIdList).containsExactlyInAnyOrderElementsOf(dbOrderIdList);
     }
 
     @Test
@@ -70,7 +72,7 @@ class OrderServiceImplIT {
         assertEquals(DATE_TIME,returnedDto.getPaymentDate());
         assertEquals(DATE_TIME,returnedDto.getAdmissionDate());
         assertEquals(DATE_TIME,returnedDto.getRealizationDate());
-        assertEquals(new BigDecimal("100"),returnedDto.getTotalPrice());
+        assertEquals(ORDER1_TOTAL_PRICE,returnedDto.getTotalPrice());
         assertEquals(DB_USER_LOGIN,returnedDto.getUserLogin());
     }
 
