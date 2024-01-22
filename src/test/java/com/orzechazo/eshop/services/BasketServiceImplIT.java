@@ -21,11 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BasketServiceImplIT {
+
     @Autowired
     private BasketRepository basketRepository;
-
     private BasketServiceImpl basketService;
     private final static String DB_BASKET_ID = BootstrapBasket.DB_BASKET_ID;
+    public static final BigDecimal BASKET1_TOTAL_PRICE = new BigDecimal("120");
     private int DB_DEFAULT_BASKET_COUNT;
 
     @BeforeEach
@@ -43,7 +44,7 @@ class BasketServiceImplIT {
         BasketDto returnedDto = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
         //then
         assertEquals(DB_BASKET_ID,returnedDto.getBasketId());
-        assertEquals(new BigDecimal("120"),returnedDto.getTotalPrice());
+        assertEquals(BASKET1_TOTAL_PRICE,returnedDto.getTotalPrice());
     }
 
     @Test
