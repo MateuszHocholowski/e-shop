@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
+import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
@@ -148,14 +149,15 @@ class UserControllerE2ETest {
 
     @Test
     void updateUser() throws Exception {
-        UserDto userDto = UserDto.builder().login(DB_USER_LOGIN).build();
+        BasketDto newBasket = BasketDto.builder().basketId("newBasket").build();
+        UserDto userToUpdate = UserDto.builder().login(DB_USER_LOGIN).basket(newBasket).build();
         mockMvc.perform(post("/users/"+ DB_USER_LOGIN + "/update")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(writer.writeValueAsString(userDto))
+                .content(writer.writeValueAsString(userToUpdate))
                 .param("login",DB_USER_LOGIN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login",equalTo(DB_USER_LOGIN)))
-                .andExpect(jsonPath("$.password",nullValue()));
+                .andExpect(jsonPath("$.basket.basketId",equalTo("newBasket")));
 
         assertEquals(DEFAULT_DB_USER_COUNT,userRepository.count());
     }
