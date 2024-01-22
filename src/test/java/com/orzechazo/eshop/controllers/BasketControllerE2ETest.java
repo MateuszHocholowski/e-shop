@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET_ID;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,18 +33,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BasketControllerE2ETest {
 
+    public static final BigDecimal BASKET_TOTAL_PRICE = new BigDecimal("120");
+    private static final String BASKET_ID_NOT_IN_DB = "basketNotInDb";
     @Autowired
-    BasketRepository basketRepository;
-    BasketServiceImpl basketService;
-    BootstrapBasket bootstrap;
-    MockMvc mockMvc;
-    ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    private BasketRepository basketRepository;
+    private MockMvc mockMvc;
+    private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private int DB_DEFAULT_BASKET_COUNT;
-    private static final String DB_BASKET_ID = BootstrapBasket.DB_BASKET_ID;
     @BeforeEach
     void setUp() {
-        basketService = new BasketServiceImpl(basketRepository);
-        bootstrap = new BootstrapBasket(basketRepository);
+        BasketServiceImpl basketService = new BasketServiceImpl(basketRepository);
+        BootstrapBasket bootstrap = new BootstrapBasket(basketRepository);
         bootstrap.loadData();
         BasketController basketController = new BasketController(basketService);
         mockMvc = MockMvcBuilders.standaloneSetup(basketController).build();
@@ -57,16 +57,16 @@ class BasketControllerE2ETest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.basketId",equalTo(DB_BASKET_ID)))
-                .andExpect(jsonPath("$.totalPrice",equalTo(new BigDecimal("120").intValue())));
+                .andExpect(jsonPath("$.totalPrice",equalTo(BASKET_TOTAL_PRICE.intValue())));
     }
 
     @Test
     void getBasketByBasketIdThatIsNotInDB() throws Exception {
-        mockMvc.perform(get("/baskets/basketNotInDb")
+        mockMvc.perform(get("/baskets/" + BASKET_ID_NOT_IN_DB)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("Basket: basketNotInDb doesn't exist in database",
+                .andExpect(result -> assertEquals("Basket: " + BASKET_ID_NOT_IN_DB + " doesn't exist in database",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
@@ -96,14 +96,14 @@ class BasketControllerE2ETest {
 
     @Test
     void testUpdateBasketWithIdNotInDB() throws Exception {
-        BasketDto basketToUpdate = BasketDto.builder().basketId("basketNotInDb").build();
+        BasketDto basketToUpdate = BasketDto.builder().basketId(BASKET_ID_NOT_IN_DB).build();
 
-        mockMvc.perform(post("/baskets/update/basketNotInDb")
+        mockMvc.perform(post("/baskets/update/" + BASKET_ID_NOT_IN_DB)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(basketToUpdate)))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("Basket: basketNotInDb doesn't exist in database",
+                .andExpect(result -> assertEquals("Basket: " + BASKET_ID_NOT_IN_DB + " doesn't exist in database",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
