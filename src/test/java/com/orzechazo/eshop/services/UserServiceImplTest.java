@@ -2,6 +2,7 @@ package com.orzechazo.eshop.services;
 
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
+import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
+    private static final String USER_LOGIN = "login1";
     @InjectMocks
     private UserServiceImpl userService;
     @Mock
@@ -33,7 +35,7 @@ class UserServiceImplTest {
     void getAllUsers() {
         //given
         User user1 = new User();
-        user1.setLogin("login1");
+        user1.setLogin(USER_LOGIN);
         user1.setPassword("password1");
         User user2 = new User();
         user2.setLogin("login2");
@@ -51,12 +53,12 @@ class UserServiceImplTest {
         //given
         User user1 = new User();
         user1.setId(1L);
-        user1.setLogin("login1");
+        user1.setLogin(USER_LOGIN);
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user1));
         //when
-        UserDto returnedDto = userService.getUserDtoByLogin("login1");
+        UserDto returnedDto = userService.getUserDtoByLogin(USER_LOGIN);
         //then
-        assertEquals("login1",returnedDto.getLogin());
+        assertEquals(USER_LOGIN,returnedDto.getLogin());
     }
 
     @Test
@@ -72,12 +74,12 @@ class UserServiceImplTest {
         Order order2 = new Order();
         order2.setOrderId("order2");
         User user = new User();
-        user.setLogin("login1");
+        user.setLogin(USER_LOGIN);
         user.setOrders(List.of(order1,order2));
         List<String> orderIds = user.getOrders().stream().map(Order::getOrderId).toList();
         when(userRepository.findByLogin(anyString())).thenReturn(Optional.of(user));
         //when
-        List<OrderDto> returnedDtos = userService.getOrdersByUser("login1");
+        List<OrderDto> returnedDtos = userService.getOrdersByUser(USER_LOGIN);
         List<String> returnedDtosOrderIds = returnedDtos.stream().map(OrderDto::getOrderId).toList();
         //then
         assertEquals(2,returnedDtos.size());
@@ -88,74 +90,76 @@ class UserServiceImplTest {
     @Test
     void createUser() {
         //given
-        UserDto userDto = UserDto.builder().login("login1").build();
+        UserDto userDto = UserDto.builder().login(USER_LOGIN).build();
         User user = new User();
         user.setId(1L);
-        user.setLogin("login1");
+        user.setLogin(USER_LOGIN);
         when(userRepository.save(any())).thenReturn(user);
         //when
         UserDto createdDto = userService.createUser(userDto);
         //then
-        assertEquals("login1",createdDto.getLogin());
+        assertEquals(USER_LOGIN,createdDto.getLogin());
         verify(userRepository,times(1)).save(any());
     }
     @Test
     void createUserBadRequest() {
         //given
-        UserDto userDto = UserDto.builder().login("login1").build();
+        UserDto userDto = UserDto.builder().login(USER_LOGIN).build();
         User user = new User();
         user.setId(1L);
-        user.setLogin("login1");
+        user.setLogin(USER_LOGIN);
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
         //when
         Exception exception = assertThrows(BadRequestException.class,() -> userService.createUser(userDto));
         //then
-        assertEquals("User: login1 is already in database.",exception.getMessage());
+        assertEquals("User: " + USER_LOGIN + " is already in database.",exception.getMessage());
         verify(userRepository,times(0)).save(any());
     }
     @Test
     void updateUser() {
         //given
-        UserDto userDto = UserDto.builder().login("login1").build();
+        BasketDto newBasket = BasketDto.builder().basketId("newBasket").build();
+        UserDto userDto = UserDto.builder().login(USER_LOGIN).basket(newBasket).build();
         User user = new User();
-        user.setLogin("login1");
+        user.setLogin(USER_LOGIN);
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
         when(userRepository.save(any())).thenReturn(user);
         //when
-        UserDto createdDto = userService.updateUser(userDto);
+        UserDto updatedDto = userService.updateUser(userDto);
         //then
-        assertEquals("login1",createdDto.getLogin());
+        assertEquals(USER_LOGIN,updatedDto.getLogin());
+        assertEquals("newBasket",updatedDto.getBasket().getBasketId());
         verify(userRepository,times(1)).save(any());
     }
     @Test
     void updateUserBadRequest() {
         //given
-        UserDto userDto = UserDto.builder().login("login1").build();
+        UserDto userDto = UserDto.builder().login(USER_LOGIN).build();
         //when
         Exception exception = assertThrows(ResourceNotFoundException.class,() -> userService.updateUser(userDto));
         //then
-        assertEquals("User: login1 doesn't exist in database.",exception.getMessage());
+        assertEquals("User: " + USER_LOGIN + " doesn't exist in database.",exception.getMessage());
         verify(userRepository,times(0)).save(any());
     }
 
     @Test
     void addOrder() {
         User user = new User();
-        user.setLogin("login");
+        user.setLogin("newUser");
         Order order = new Order();
         order.setOrderId("order1");
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
         //when
-        Order returnedOrder = userService.addOrder("login",order);
+        Order returnedOrder = userService.addOrder("newUser",order);
         //then
-        assertEquals("login",returnedOrder.getUser().getLogin());
+        assertEquals("newUser",returnedOrder.getUser().getLogin());
         assertThat(user.getOrders()).containsExactlyInAnyOrderElementsOf(List.of(order));
     }
 
     @Test
     void deleteOrder() {
         User user = new User();
-        user.setLogin("login");
+        user.setLogin(USER_LOGIN);
         Order order = new Order();
         user.addOrder(order);
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
@@ -169,7 +173,7 @@ class UserServiceImplTest {
     @Test
     void deleteUserById() {
         //when
-        userService.deleteUserByLogin("login");
+        userService.deleteUserByLogin(USER_LOGIN);
         //then
         verify(userRepository,times(1)).deleteByLogin(any());
     }

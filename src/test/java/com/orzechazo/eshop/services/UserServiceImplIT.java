@@ -3,6 +3,7 @@ package com.orzechazo.eshop.services;
 import com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
+import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
@@ -106,12 +107,14 @@ class UserServiceImplIT {
 
     @Test
     void updateUser() {
-        UserDto userToUpdate = UserDto.builder().login(DB_USER_LOGIN).password("newPassword").build();
+        BasketDto newBasket = BasketDto.builder().basketId("newBasket").build();
+        UserDto userToUpdate = UserDto.builder().login(DB_USER_LOGIN).basket(newBasket).build();
         //when
         userService.updateUser(userToUpdate);
         UserDto updatedUser = userService.getUserDtoByLogin(DB_USER_LOGIN);
         //then
-        assertEquals("user1",updatedUser.getLogin());
+        assertEquals(DB_USER_LOGIN,updatedUser.getLogin());
+        assertEquals("newBasket",updatedUser.getBasket().getBasketId());
         assertEquals(DEFAULT_DB_USER_COUNT,userRepository.count());
     }
 

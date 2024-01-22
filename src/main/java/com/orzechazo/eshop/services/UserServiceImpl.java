@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserService{
         if (userDto.getPassword() != null && !userDto.getPassword().equals(currentUser.getPassword())) {
             currentUser.setPassword(userDto.getPassword());
         }
+        currentUser.setBasket(userMapper.userDtoToUser(userDto).getBasket());
         return saveUserAndReturnDto(currentUser);
     }
 
