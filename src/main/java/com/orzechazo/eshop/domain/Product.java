@@ -28,7 +28,6 @@ public class Product extends BaseEntity {
     private Order order;
     @ManyToOne
     private User user;
-    @ManyToOne
-    private Basket basket;
+
 
 }
