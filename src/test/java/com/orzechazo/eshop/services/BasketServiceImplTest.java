@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +27,7 @@ class BasketServiceImplTest {
 
     public static final String BASKET_ID = "1";
     private static final String PRODUCT_NAME = "productName";
+    private static final BigDecimal GROSS_PRICE = new BigDecimal("12");
     @InjectMocks
     private BasketServiceImpl basketService;
     @Mock
@@ -246,5 +248,31 @@ class BasketServiceImplTest {
         //then
         assertFalse(updatedDto.getProductNamesMap().containsKey(PRODUCT_NAME));
         verify(basketRepository,times(1)).save(any());
+    }
+
+    @Test
+    void testCountBasketTotalPrice() {
+        Product newProduct = new Product();
+        newProduct.setName(PRODUCT_NAME);
+        newProduct.setGrossPrice(GROSS_PRICE);
+
+        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME)
+                .grossPrice(GROSS_PRICE).build();
+
+        Basket basket = new Basket();
+        basket.setProducts(new HashMap<>());
+        basket.setBasketId(BASKET_ID);
+
+        Basket updatedBasket = new Basket();
+        updatedBasket.setProducts(new HashMap<>(Map.of(newProduct,3)));
+        updatedBasket.setTotalPrice(GROSS_PRICE.multiply(new BigDecimal("3")));
+
+        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
+        when(basketRepository.save(any())).thenReturn(updatedBasket);
+        //when
+        BasketDto updatedBasketDto = basketService.addProductToBasket(PRODUCT_NAME,BASKET_ID,3);
+        //then
+        assertEquals(GROSS_PRICE.multiply(new BigDecimal("3")), updatedBasketDto.getTotalPrice());
     }
 }
