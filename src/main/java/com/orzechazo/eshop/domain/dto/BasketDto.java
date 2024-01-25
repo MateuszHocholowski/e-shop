@@ -10,6 +10,6 @@ import java.util.Map;
 public class BasketDto {
 
     String basketId;
-    Map<ProductDto, Integer> products;
+    Map<String, Integer> productNamesMap;
     BigDecimal totalPrice;
 }

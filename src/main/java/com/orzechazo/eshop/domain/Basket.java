@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -24,7 +25,7 @@ public class Basket extends BaseEntity{
     joinColumns = @JoinColumn(name = "basket_id"))
     @MapKeyJoinColumn(name = "product_name")
     @Column(name = "amount")
-    private Map<Product, Integer> products;
+    private Map<Product, Integer> products = new HashMap<>();
 
     private BigDecimal totalPrice;
 

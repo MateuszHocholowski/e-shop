@@ -122,7 +122,7 @@ class BasketServiceImplTest {
         //when
         BasketDto updatedDto = basketService.addProductToBasket(PRODUCT_NAME, BASKET_ID, amountToAdd);
         //then
-        assertEquals(amountToAdd, updatedDto.getProducts().get(newProductDto));
+        assertEquals(amountToAdd, updatedDto.getProductNamesMap().get(PRODUCT_NAME));
         verify(basketRepository,times(1)).save(any());
     }
 
@@ -144,7 +144,7 @@ class BasketServiceImplTest {
         //when
         BasketDto updatedDto = basketService.addProductToBasket(PRODUCT_NAME, BASKET_ID);
         //then
-        assertEquals(1, updatedDto.getProducts().get(newProductDto));
+        assertEquals(1, updatedDto.getProductNamesMap().get(PRODUCT_NAME));
         verify(basketRepository,times(1)).save(any());
     }
 
@@ -169,7 +169,7 @@ class BasketServiceImplTest {
         //when
         BasketDto updatedDto = basketService.addProductToBasket(PRODUCT_NAME, BASKET_ID);
         //then
-        assertEquals(productAmountInBasket + 1, updatedDto.getProducts().get(newProductDto));
+        assertEquals(productAmountInBasket + 1, updatedDto.getProductNamesMap().get(PRODUCT_NAME));
         verify(basketRepository,times(1)).save(any());
     }
 
@@ -195,7 +195,7 @@ class BasketServiceImplTest {
         //when
         BasketDto updatedDto = basketService.subtractProductFromBasket(PRODUCT_NAME,BASKET_ID,amountToSubtract);
         //then
-        assertEquals(productAmountInBasket-amountToSubtract,updatedDto.getProducts().get(newProductDto));
+        assertEquals(productAmountInBasket-amountToSubtract,updatedDto.getProductNamesMap().get(PRODUCT_NAME));
         verify(basketRepository, times(1)).save(any());
     }
     @Test
@@ -219,7 +219,7 @@ class BasketServiceImplTest {
         //when
         BasketDto updatedDto = basketService.subtractProductFromBasket(PRODUCT_NAME,BASKET_ID);
         //then
-        assertEquals(productAmountInBasket-1,updatedDto.getProducts().get(newProductDto));
+        assertEquals(productAmountInBasket-1,updatedDto.getProductNamesMap().get(PRODUCT_NAME));
         verify(basketRepository, times(1)).save(any());
     }
 
@@ -244,7 +244,7 @@ class BasketServiceImplTest {
         //when
         BasketDto updatedDto = basketService.subtractProductFromBasket(PRODUCT_NAME, BASKET_ID);
         //then
-        assertFalse(updatedDto.getProducts().containsKey(newProductDto));
+        assertFalse(updatedDto.getProductNamesMap().containsKey(PRODUCT_NAME));
         verify(basketRepository,times(1)).save(any());
     }
 }

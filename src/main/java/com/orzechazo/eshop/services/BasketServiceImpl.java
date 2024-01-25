@@ -39,6 +39,7 @@ public class BasketServiceImpl implements BasketService{
         Basket currentBasket = getBasketByBasketId(basketDto.getBasketId());
         Basket updateBasket = basketMapper.basketDtoToBasket(basketDto);
         updateBasket.setId(currentBasket.getId());
+        updateBasket.setProducts(currentBasket.getProducts());
         return saveBasketAndReturnDto(updateBasket);
     }
 
@@ -92,5 +93,4 @@ public class BasketServiceImpl implements BasketService{
         basketToUpdate.setProducts(currentProducts);
         return saveBasketAndReturnDto(basketToUpdate);
     }
-
 }
