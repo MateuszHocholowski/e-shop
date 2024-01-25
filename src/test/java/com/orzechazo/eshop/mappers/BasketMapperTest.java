@@ -5,7 +5,7 @@ import com.orzechazo.eshop.domain.dto.BasketDto;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,12 +17,12 @@ class BasketMapperTest {
     void basketDtoToBasket() {
         Basket expectedBasket = new Basket();
         expectedBasket.setBasketId(BASKET_ID);
-        expectedBasket.setProducts(new ArrayList<>());
+        expectedBasket.setProducts(new HashMap<>());
         expectedBasket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto basketDto = BasketDto.builder()
                 .basketId(BASKET_ID)
-                .products(new ArrayList<>())
+                .products(new HashMap<>())
                 .totalPrice(new BigDecimal("12"))
                 .build();
 
@@ -35,12 +35,12 @@ class BasketMapperTest {
         //given
         Basket expectedBasket = new Basket();
         expectedBasket.setBasketId(BASKET_ID);
-        expectedBasket.setProducts(new ArrayList<>());
+        expectedBasket.setProducts(new HashMap<>());
         expectedBasket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto basketDto = BasketDto.builder()
                 .basketId(BASKET_ID)
-                .products(new ArrayList<>())
+                .products(new HashMap<>())
                 .totalPrice(new BigDecimal("13"))
                 .build();
         //when
@@ -54,12 +54,12 @@ class BasketMapperTest {
         //given
         Basket basket = new Basket();
         basket.setBasketId(BASKET_ID);
-        basket.setProducts(new ArrayList<>());
+        basket.setProducts(new HashMap<>());
         basket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto expectedDto = BasketDto.builder()
                 .basketId(BASKET_ID)
-                .products(new ArrayList<>())
+                .products(new HashMap<>())
                 .totalPrice(new BigDecimal("12"))
                 .build();
         //when
@@ -73,12 +73,12 @@ class BasketMapperTest {
         //given
         Basket basket = new Basket();
         basket.setBasketId(BASKET_ID);
-        basket.setProducts(new ArrayList<>());
+        basket.setProducts(new HashMap<>());
         basket.setTotalPrice(new BigDecimal("12"));
 
         BasketDto expectedDto = BasketDto.builder()
                 .basketId(BASKET_ID)
-                .products(new ArrayList<>())
+                .products(new HashMap<>())
                 .totalPrice(new BigDecimal("13"))
                 .build();
         //when
