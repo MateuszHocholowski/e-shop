@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -18,8 +19,14 @@ public class Basket extends BaseEntity{
 
     @Column(unique = true)
     private String basketId;
-    @OneToMany(mappedBy = "basket")
-    private List<Product> products;
+
+    @ElementCollection
+    @CollectionTable(name = "BASKET_PRODUCTS",
+    joinColumns = @JoinColumn(name = "basket_id"))
+    @MapKeyJoinColumn(name = "product_id")
+    @Column(name = "amount")
+    private Map<Product, Integer> products = new HashMap<>();
+
     private BigDecimal totalPrice;
 
     public static void createBasketId(Basket basket) {

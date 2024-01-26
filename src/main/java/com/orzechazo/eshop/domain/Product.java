@@ -18,8 +18,8 @@ public class Product extends BaseEntity {
 
     @Column(name = "PRODUCT_NAME", unique = true)
     private String name;
-    private BigDecimal netPrice;
-    private BigDecimal grossPrice;
+    private BigDecimal netPrice = new BigDecimal("0");
+    private BigDecimal grossPrice = new BigDecimal("0");
     @Lob
     private String description;
     private int amount;
@@ -28,7 +28,6 @@ public class Product extends BaseEntity {
     private Order order;
     @ManyToOne
     private User user;
-    @ManyToOne
-    private Basket basket;
+
 
 }
