@@ -5,8 +5,8 @@ import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.BasketMapper;
-import com.orzechazo.eshop.mappers.ProductMapper;
 import com.orzechazo.eshop.repositories.BasketRepository;
+import com.orzechazo.eshop.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -14,13 +14,12 @@ import java.util.Map;
 @Service
 public class BasketServiceImpl implements BasketService{
     private final BasketRepository basketRepository;
-    private final ProductService productService;
+    private final ProductRepository productRepository;
     private final BasketMapper basketMapper = BasketMapper.INSTANCE;
-    private final ProductMapper productMapper = ProductMapper.INSTANCE;
 
-    public BasketServiceImpl(BasketRepository basketRepository, ProductService productService) {
+    public BasketServiceImpl(BasketRepository basketRepository, ProductRepository productRepository) {
         this.basketRepository = basketRepository;
-        this.productService = productService;
+        this.productRepository = productRepository;
     }
     @Override
     public BasketDto getBasketDtoByBasketId(String basketId) {
@@ -59,7 +58,7 @@ public class BasketServiceImpl implements BasketService{
     @Override
     public BasketDto addProductToBasket(String productName, String basketId, int amount) {
         Basket currentBasket = getBasketByBasketId(basketId);
-        Product productToAdd = productMapper.productDtoToProduct(productService.getProductDtoByName(productName));
+        Product productToAdd = getProductByName(productName);
         return updateBasketProducts(currentBasket, productToAdd, true, amount);
     }
 
@@ -71,7 +70,7 @@ public class BasketServiceImpl implements BasketService{
     @Override
     public BasketDto subtractProductFromBasket(String productName, String basketId, int amount) {
         Basket currentBasket = getBasketByBasketId(basketId);
-        Product productToAdd = productMapper.productDtoToProduct(productService.getProductDtoByName(productName));
+        Product productToAdd = getProductByName(productName);
         return updateBasketProducts(currentBasket, productToAdd, false, amount);
     }
 
@@ -85,12 +84,20 @@ public class BasketServiceImpl implements BasketService{
                                            boolean isAddition, int amount) {
         Map<Product, Integer> currentProducts = basketToUpdate.getProducts();
         int finalAmount = isAddition ? amount : (amount * -1);
+
         currentProducts.computeIfPresent(productToUpdate, (k,v) -> v + finalAmount);
         currentProducts.putIfAbsent(productToUpdate, finalAmount);
+
         if (currentProducts.get(productToUpdate) <= 0) {
             currentProducts.remove(productToUpdate);
         }
+
         basketToUpdate.setProducts(currentProducts);
         return saveBasketAndReturnDto(basketToUpdate);
+    }
+    private Product getProductByName(String productName) {
+        return productRepository.findByName(productName)
+                .orElseThrow(() -> new ResourceNotFoundException("Product: " + productName
+                        + " doesn't exist in database."));
     }
 }
