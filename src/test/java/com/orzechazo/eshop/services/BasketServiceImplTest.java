@@ -3,10 +3,10 @@ package com.orzechazo.eshop.services;
 import com.orzechazo.eshop.domain.Basket;
 import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.BasketDto;
-import com.orzechazo.eshop.domain.dto.ProductDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
+import com.orzechazo.eshop.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +33,7 @@ class BasketServiceImplTest {
     @Mock
     private BasketRepository basketRepository;
     @Mock
-    private ProductService productService;
+    private ProductRepository productRepository;
     @Test
     void getBasketByBasketId() {
         //given
@@ -108,7 +108,6 @@ class BasketServiceImplTest {
         Product newProduct = new Product();
         newProduct.setName(PRODUCT_NAME);
 
-        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME).build();
         int amountToAdd = 2;
 
         Basket basket = new Basket();
@@ -118,7 +117,7 @@ class BasketServiceImplTest {
         Basket updatedBasket = new Basket();
         updatedBasket.setProducts(new HashMap<>(Map.of(newProduct,amountToAdd)));
 
-        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         //when
@@ -134,13 +133,12 @@ class BasketServiceImplTest {
         Product newProduct = new Product();
         newProduct.setName(PRODUCT_NAME);
 
-        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME).build();
         Basket basket = new Basket();
         basket.setProducts(new HashMap<>());
         basket.setBasketId(BASKET_ID);
         Basket updatedBasket = new Basket();
         updatedBasket.setProducts(new HashMap<>(Map.of(newProduct,1)));
-        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         //when
@@ -156,7 +154,6 @@ class BasketServiceImplTest {
         Product newProduct = new Product();
         newProduct.setName(PRODUCT_NAME);
         int productAmountInBasket = 3;
-        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME).build();
 
         Basket basket = new Basket();
         basket.setProducts(new HashMap<>(Map.of(newProduct,productAmountInBasket)));
@@ -165,7 +162,7 @@ class BasketServiceImplTest {
         Basket updatedBasket = new Basket();
         updatedBasket.setProducts(new HashMap<>(Map.of(newProduct,productAmountInBasket + 1)));
 
-        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         //when
@@ -181,7 +178,6 @@ class BasketServiceImplTest {
         Product newProduct = new Product();
         newProduct.setName(PRODUCT_NAME);
         int productAmountInBasket = 3;
-        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME).build();
         int amountToSubtract = 2;
 
         Basket basket = new Basket();
@@ -191,7 +187,7 @@ class BasketServiceImplTest {
         Basket updatedBasket = new Basket();
         updatedBasket.setProducts(new HashMap<>(Map.of(newProduct,productAmountInBasket - amountToSubtract)));
 
-        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         //when
@@ -206,7 +202,6 @@ class BasketServiceImplTest {
         Product newProduct = new Product();
         newProduct.setName(PRODUCT_NAME);
         int productAmountInBasket = 3;
-        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME).build();
 
         Basket basket = new Basket();
         basket.setProducts(new HashMap<>(Map.of(newProduct,productAmountInBasket)));
@@ -215,7 +210,7 @@ class BasketServiceImplTest {
         Basket updatedBasket = new Basket();
         updatedBasket.setProducts(new HashMap<>(Map.of(newProduct,productAmountInBasket - 1)));
 
-        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         //when
@@ -231,7 +226,6 @@ class BasketServiceImplTest {
         Product newProduct = new Product();
         newProduct.setName(PRODUCT_NAME);
         int productAmountInBasket = 1;
-        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME).build();
 
         Basket basket = new Basket();
         basket.setProducts(new HashMap<>(Map.of(newProduct,productAmountInBasket)));
@@ -240,7 +234,7 @@ class BasketServiceImplTest {
         Basket updatedBasket = new Basket();
         updatedBasket.setProducts(new HashMap<>());
 
-        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         //when
