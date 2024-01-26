@@ -23,7 +23,7 @@ public class Basket extends BaseEntity{
     @ElementCollection
     @CollectionTable(name = "BASKET_PRODUCTS",
     joinColumns = @JoinColumn(name = "basket_id"))
-    @MapKeyJoinColumn(name = "product_name")
+    @MapKeyJoinColumn(name = "product_id")
     @Column(name = "amount")
     private Map<Product, Integer> products = new HashMap<>();
 
