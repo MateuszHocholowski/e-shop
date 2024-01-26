@@ -29,4 +29,5 @@ public class Product extends BaseEntity {
     @ManyToOne
     private User user;
 
+
 }

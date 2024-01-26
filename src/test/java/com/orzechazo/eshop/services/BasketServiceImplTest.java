@@ -250,9 +250,6 @@ class BasketServiceImplTest {
         newProduct.setName(PRODUCT_NAME);
         newProduct.setGrossPrice(GROSS_PRICE);
 
-        ProductDto newProductDto = ProductDto.builder().name(PRODUCT_NAME)
-                .grossPrice(GROSS_PRICE).build();
-
         Basket basket = new Basket();
         basket.setProducts(new HashMap<>());
         basket.setBasketId(BASKET_ID);
@@ -261,7 +258,7 @@ class BasketServiceImplTest {
         updatedBasket.setProducts(new HashMap<>(Map.of(newProduct,3)));
         updatedBasket.setTotalPrice(GROSS_PRICE.multiply(new BigDecimal("3")));
 
-        when(productService.getProductDtoByName(anyString())).thenReturn(newProductDto);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         when(basketRepository.findByBasketId(any())).thenReturn(Optional.of(basket));
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         //when
