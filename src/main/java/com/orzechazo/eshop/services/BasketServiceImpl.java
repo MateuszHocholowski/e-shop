@@ -81,6 +81,14 @@ public class BasketServiceImpl implements BasketService{
         return subtractProductFromBasket(productName, basketId, 1);
     }
 
+    @Override
+    public BasketDto removeProductFromBasket(String productName, String basketId) {
+        Optional<Integer> productAmount = Optional.of(getBasketDtoByBasketId(basketId)
+                .getProductNamesMap().get(productName));
+        return subtractProductFromBasket(productName,basketId, productAmount.orElse(0));
+    }
+
+
     private BasketDto updateBasketProducts(Basket basketToUpdate, Product productToUpdate,
                                            boolean isAddition, int amount) {
         Map<Product, Integer> currentProducts = basketToUpdate.getProducts();

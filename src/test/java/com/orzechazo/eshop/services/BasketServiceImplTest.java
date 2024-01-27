@@ -238,7 +238,7 @@ class BasketServiceImplTest {
         when(basketRepository.save(any())).thenReturn(updatedBasket);
         when(productRepository.findByName(anyString())).thenReturn(Optional.of(newProduct));
         //when
-        BasketDto updatedDto = basketService.subtractProductFromBasket(PRODUCT_NAME, BASKET_ID);
+        BasketDto updatedDto = basketService.removeProductFromBasket(PRODUCT_NAME, BASKET_ID);
         //then
         assertFalse(updatedDto.getProductNamesMap().containsKey(PRODUCT_NAME));
         verify(basketRepository,times(1)).save(any());

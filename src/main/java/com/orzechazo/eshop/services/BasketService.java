@@ -11,5 +11,6 @@ public interface BasketService {
     BasketDto addProductToBasket(String productName, String basketId);
     BasketDto subtractProductFromBasket(String productName, String basketId, int amount);
     BasketDto subtractProductFromBasket(String productName, String basketId);
+    BasketDto removeProductFromBasket(String productName, String basketId);
 }
 
