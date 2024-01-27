@@ -10,6 +10,7 @@ import com.orzechazo.eshop.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class BasketServiceImpl implements BasketService{
@@ -77,6 +78,13 @@ public class BasketServiceImpl implements BasketService{
     @Override
     public BasketDto subtractProductFromBasket(String productName, String basketId) {
         return subtractProductFromBasket(productName, basketId, 1);
+    }
+
+    @Override
+    public BasketDto removeProductFromBasket(String productName, String basketId) {
+        Optional<Integer> productAmount = Optional.of(getBasketDtoByBasketId(basketId)
+                .getProductNamesMap().get(productName));
+        return subtractProductFromBasket(productName,basketId, productAmount.orElse(0));
     }
 
 
