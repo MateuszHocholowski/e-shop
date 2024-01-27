@@ -3,7 +3,6 @@ package com.orzechazo.eshop.services;
 import com.orzechazo.eshop.domain.Basket;
 import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.BasketDto;
-import com.orzechazo.eshop.domain.dto.ProductDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;

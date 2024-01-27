@@ -103,7 +103,7 @@ public class BasketServiceImpl implements BasketService{
                 .map(entry -> entry.getKey().getGrossPrice()
                         .multiply(new BigDecimal(entry.getValue().toString())))
                 .reduce(BigDecimal::add);
-        return totalPriceOptional.orElse(null);
+        return totalPriceOptional.orElse(new BigDecimal("0"));
     }
     private Product getProductByName(String productName) {
         return productRepository.findByName(productName)
