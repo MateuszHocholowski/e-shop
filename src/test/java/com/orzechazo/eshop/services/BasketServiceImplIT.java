@@ -152,7 +152,7 @@ class BasketServiceImplIT {
         //given
         basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
         //when
-        basketService.subtractProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
+        basketService.removeProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
 
         BasketDto basketAfterRemoval = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
 
@@ -169,7 +169,7 @@ class BasketServiceImplIT {
         basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
         basketService.addProductToBasket(DB_PRODUCT2_NAME, DB_BASKET_ID);
         //when
-        basketService.subtractProductFromBasket(DB_PRODUCT2_NAME, DB_BASKET_ID);
+        basketService.removeProductFromBasket(DB_PRODUCT2_NAME, DB_BASKET_ID);
 
         BasketDto basketAfterRemoval = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
         basketProductNameSet = basketAfterRemoval.getProductNamesMap().keySet();
