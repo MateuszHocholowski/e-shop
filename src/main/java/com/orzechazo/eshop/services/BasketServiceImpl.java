@@ -9,6 +9,7 @@ import com.orzechazo.eshop.repositories.BasketRepository;
 import com.orzechazo.eshop.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
@@ -71,8 +72,8 @@ public class BasketServiceImpl implements BasketService{
     @Override
     public BasketDto subtractProductFromBasket(String productName, String basketId, int amount) {
         Basket currentBasket = getBasketByBasketId(basketId);
-        Product productToAdd = getProductByName(productName);
-        return updateBasketProducts(currentBasket, productToAdd, false, amount);
+        Product productToSubtract = getProductByName(productName);
+        return updateBasketProducts(currentBasket, productToSubtract, false, amount);
     }
 
     @Override
@@ -101,7 +102,16 @@ public class BasketServiceImpl implements BasketService{
         }
 
         basketToUpdate.setProducts(currentProducts);
+        basketToUpdate.setTotalPrice(countTotalPrice(currentProducts));
+
         return saveBasketAndReturnDto(basketToUpdate);
+    }
+    private BigDecimal countTotalPrice(Map<Product, Integer> basketProducts) {
+        Optional<BigDecimal> totalPriceOptional = basketProducts.entrySet().stream()
+                .map(entry -> entry.getKey().getGrossPrice()
+                        .multiply(new BigDecimal(entry.getValue().toString())))
+                .reduce(BigDecimal::add);
+        return totalPriceOptional.orElse(new BigDecimal("0"));
     }
     private Product getProductByName(String productName) {
         return productRepository.findByName(productName)
