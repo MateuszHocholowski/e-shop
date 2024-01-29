@@ -1,5 +1,6 @@
 package com.orzechazo.eshop.domain;
 
+import com.orzechazo.eshop.domain.enums.OrderStatus;
 import com.orzechazo.eshop.domain.helpers.IdCreator;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false, exclude = "user")
-@Entity
+@Entity(name = "ORDERS")
 public class Order extends BaseEntity{
 
     @Column(unique = true)
@@ -26,6 +27,8 @@ public class Order extends BaseEntity{
     private LocalDateTime paymentDate;
     private LocalDateTime realizationDate;
     private BigDecimal totalPrice;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
     @ManyToOne
     private User user;
 
@@ -33,6 +36,7 @@ public class Order extends BaseEntity{
         if(order.orderId == null) {
             String orderId = IdCreator.createId(order);
             order.setOrderId(orderId);
+            order.setOrderStatus(OrderStatus.PENDING);
         } else {
             throw new BadRequestException("Order already has an id: " + order.getOrderId());
         }
