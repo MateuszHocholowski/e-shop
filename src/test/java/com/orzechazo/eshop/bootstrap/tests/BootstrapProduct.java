@@ -12,6 +12,8 @@ import java.util.List;
 @Slf4j
 @Component
 public class BootstrapProduct {
+    public static final BigDecimal DB_PRODUCT1_GROSS_PRICE = new BigDecimal("3.1");
+    public static final int DB_PRODUCT1_AMOUNT = 5;
     private final List<Product> products = new ArrayList<>();
     private final ProductRepository productRepository;
     public static final String DB_PRODUCT1_NAME = "dbProduct1";
@@ -26,9 +28,9 @@ public class BootstrapProduct {
         log.debug("Loading Products Data");
         Product product1 = new Product();
         product1.setName(DB_PRODUCT1_NAME);
-        product1.setAmount(5);
+        product1.setAmount(DB_PRODUCT1_AMOUNT);
         product1.setNetPrice(new BigDecimal("1.5"));
-        product1.setGrossPrice(new BigDecimal("3.1"));
+        product1.setGrossPrice(DB_PRODUCT1_GROSS_PRICE);
         product1.setDescription("testDescription1");
         productRepository.save(product1);
 
