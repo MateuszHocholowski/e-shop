@@ -3,13 +3,13 @@ package com.orzechazo.eshop.domain.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Map;
 
 @Value
 @Builder
 public class BasketDto {
 
     String basketId;
-    List<ProductDto> products;
+    Map<String, Integer> productNamesMap;
     BigDecimal totalPrice;
 }
