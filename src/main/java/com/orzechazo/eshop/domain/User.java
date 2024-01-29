@@ -21,7 +21,7 @@ public class User extends BaseEntity{
     private List<Order> orders = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Product> favouriteProducts;
-    @OneToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Basket basket;
 
     public void addOrder(Order order) {
