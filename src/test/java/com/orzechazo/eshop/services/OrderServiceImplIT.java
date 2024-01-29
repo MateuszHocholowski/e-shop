@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.ORDER1_TOTAL_PRICE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,7 +38,6 @@ class OrderServiceImplIT {
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2024,1,1,0,0);
     private static final String DB_USER_LOGIN = BootstrapUsersAndOrders.DB_USER_LOGIN;
     private static final String DB_ORDER_ID1 = BootstrapUsersAndOrders.DB_ORDER_ID1;
-    private static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
     private int DB_DEFAULT_ORDER_COUNT;
     private BootstrapUsersAndOrders bootstrapUsersAndOrders;
     @BeforeEach
