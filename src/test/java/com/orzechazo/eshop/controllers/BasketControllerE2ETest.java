@@ -21,7 +21,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET_ID;
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_ID;
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_TOTAL_PRICE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,8 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BasketControllerE2ETest {
-
-    public static final BigDecimal BASKET_TOTAL_PRICE = new BigDecimal("120");
     private static final String BASKET_ID_NOT_IN_DB = "basketNotInDb";
     @Autowired
     private BasketRepository basketRepository;
@@ -53,11 +52,11 @@ class BasketControllerE2ETest {
 
     @Test
     void getBasketByBasketId() throws Exception {
-        mockMvc.perform(get("/baskets/" + DB_BASKET_ID)
+        mockMvc.perform(get("/baskets/" + DB_BASKET1_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.basketId",equalTo(DB_BASKET_ID)))
-                .andExpect(jsonPath("$.totalPrice",equalTo(BASKET_TOTAL_PRICE.intValue())));
+                .andExpect(jsonPath("$.basketId",equalTo(DB_BASKET1_ID)))
+                .andExpect(jsonPath("$.totalPrice",equalTo(DB_BASKET1_TOTAL_PRICE.intValue())));
     }
 
     @Test
@@ -82,13 +81,13 @@ class BasketControllerE2ETest {
 
     @Test
     void updateBasket() throws Exception {
-        BasketDto basketToUpdate = BasketDto.builder().basketId(DB_BASKET_ID)
+        BasketDto basketToUpdate = BasketDto.builder().basketId(DB_BASKET1_ID)
                 .totalPrice(new BigDecimal("7")).build();
-        mockMvc.perform(post("/baskets/update/" + DB_BASKET_ID)
+        mockMvc.perform(post("/baskets/update/" + DB_BASKET1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(basketToUpdate)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.basketId",equalTo(DB_BASKET_ID)))
+                .andExpect(jsonPath("$.basketId",equalTo(DB_BASKET1_ID)))
                 .andExpect(jsonPath("$.totalPrice",equalTo(new BigDecimal("7").intValue())));
 
         assertEquals(DB_DEFAULT_BASKET_COUNT,basketRepository.count());
@@ -109,7 +108,7 @@ class BasketControllerE2ETest {
 
     @Test
     void deleteBasket() throws Exception {
-        mockMvc.perform(delete("/baskets/delete/" + DB_BASKET_ID))
+        mockMvc.perform(delete("/baskets/delete/" + DB_BASKET1_ID))
                 .andExpect(status().isOk());
 
         assertEquals(DB_DEFAULT_BASKET_COUNT-1, basketRepository.count());
