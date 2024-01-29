@@ -7,7 +7,6 @@ import com.orzechazo.eshop.domain.dto.ProductDto;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
 import com.orzechazo.eshop.repositories.ProductRepository;
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +16,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET_ID;
 import static com.orzechazo.eshop.bootstrap.tests.BootstrapProduct.*;
@@ -56,7 +57,7 @@ class BasketServiceImplIT {
         //given
         Set<String> expectedProductNameSet = Set.of(DB_PRODUCT1_NAME);
         //when
-        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
 
         BasketDto basketAfterAddition = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
 
@@ -72,8 +73,8 @@ class BasketServiceImplIT {
         //given
         Set<String> expectedProductNameSet = Set.of(DB_PRODUCT1_NAME, DB_PRODUCT2_NAME);
         //when
-        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
-        basketService.addProductToBasket(DB_PRODUCT2_NAME,DB_BASKET_ID);
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
+        basketService.addProductToBasket(DB_PRODUCT2_NAME,DB_BASKET_ID, 1);
 
         BasketDto basketAfterAddition = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
 
@@ -89,7 +90,7 @@ class BasketServiceImplIT {
         BigDecimal expectedPrice = DB_PRODUCT1_GROSS_PRICE.multiply(new BigDecimal(expectedProductAmount));
         Set<String> expectedProductNameSet = Set.of(DB_PRODUCT1_NAME);
         //when
-        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
         basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, expectedProductAmount-1);
 
         BasketDto basketAfterAddition = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
@@ -111,7 +112,7 @@ class BasketServiceImplIT {
 
         basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, initialProductAmount);
         //when
-        basketService.subtractProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
+        basketService.subtractProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
 
         BasketDto basketAfterSubtraction = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
 
@@ -134,7 +135,7 @@ class BasketServiceImplIT {
 
         basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, initialProductAmount);
         //when
-        basketService.subtractProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
+        basketService.subtractProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
         basketService.subtractProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID,amountToSubtract -1);
 
         BasketDto basketAfterSubtraction = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
@@ -150,7 +151,7 @@ class BasketServiceImplIT {
     @Test
     void removeProductFromBasket() {
         //given
-        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
         //when
         basketService.removeProductFromBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
 
@@ -166,8 +167,8 @@ class BasketServiceImplIT {
     void removeOnlyOneOfProductsFromBasket() {
         Set<String> expectedProductNameSet = Set.of(DB_PRODUCT1_NAME);
 
-        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
-        basketService.addProductToBasket(DB_PRODUCT2_NAME, DB_BASKET_ID);
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
+        basketService.addProductToBasket(DB_PRODUCT2_NAME, DB_BASKET_ID, 1);
         //when
         basketService.removeProductFromBasket(DB_PRODUCT2_NAME, DB_BASKET_ID);
 
@@ -198,7 +199,7 @@ class BasketServiceImplIT {
     @Test
     void tryToAddProductThatIsNotInDB() {
         Exception exception = assertThrows(ResourceNotFoundException.class,
-                () -> basketService.addProductToBasket(PRODUCT_NOT_IN_DB, DB_BASKET_ID));
+                () -> basketService.addProductToBasket(PRODUCT_NOT_IN_DB, DB_BASKET_ID, 1));
 
         assertEquals("Product: " + PRODUCT_NOT_IN_DB + " doesn't exist in database.", exception.getMessage());
     }
@@ -207,9 +208,9 @@ class BasketServiceImplIT {
     void tryToSubtractProductThatIsNotInBasket() {
         Set<String> expectedProductNameSet = Set.of(DB_PRODUCT1_NAME);
 
-        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID);
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
         //when
-        basketService.subtractProductFromBasket(DB_PRODUCT3_NAME, DB_BASKET_ID);
+        basketService.subtractProductFromBasket(DB_PRODUCT3_NAME, DB_BASKET_ID, 1);
 
         BasketDto basketAfterSubtraction = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
 
@@ -217,5 +218,28 @@ class BasketServiceImplIT {
         //then
         assertThat(basketProductNameSet).containsExactlyInAnyOrderElementsOf(expectedProductNameSet);
         assertEquals(DB_PRODUCT1_GROSS_PRICE,basketAfterSubtraction.getTotalPrice());
+    }
+
+    @Test
+    void tryToAddMoreOfProductThatIsInDb() {
+        //when
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, DB_PRODUCT1_AMOUNT + 1);
+        BasketDto updatedBasket = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
+        //then
+        assertEquals(DB_PRODUCT1_AMOUNT, updatedBasket.getProductNamesMap().get(DB_PRODUCT1_NAME));
+    }
+
+    @Test
+    void fetchAllProductsFromBasket() {
+        //given
+        Set<String> expectedProductNamesSet = Set.of(DB_PRODUCT1_NAME, DB_PRODUCT2_NAME);
+        basketService.addProductToBasket(DB_PRODUCT1_NAME, DB_BASKET_ID, 1);
+        basketService.addProductToBasket(DB_PRODUCT2_NAME, DB_BASKET_ID, 1);
+        //when
+        Map<ProductDto, Integer> returnedProducts = basketService.fetchAllProductsFromBasket(DB_BASKET_ID);
+        Set<String> returnedProductNamesSet = returnedProducts.keySet().stream()
+                .map(ProductDto::getName).collect(Collectors.toSet());
+        //then
+        assertThat(returnedProductNamesSet).containsExactlyInAnyOrderElementsOf(expectedProductNamesSet);
     }
 }
