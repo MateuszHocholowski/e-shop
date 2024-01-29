@@ -3,6 +3,7 @@ package com.orzechazo.eshop.mappers;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
+import com.orzechazo.eshop.domain.enums.OrderStatus;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -30,6 +31,7 @@ class OrderMapperTest {
         expectedOrder.setPaymentDate(DATE);
         expectedOrder.setAdmissionDate(DATE);
         expectedOrder.setRealizationDate(DATE);
+        expectedOrder.setOrderStatus(OrderStatus.PENDING);
         expectedOrder.setUser(user);
         expectedOrder.setProducts(new ArrayList<>());
 
@@ -41,6 +43,7 @@ class OrderMapperTest {
                 .realizationDate(DATE)
                 .admissionDate(DATE)
                 .userLogin(USER_LOGIN)
+                .orderStatus(OrderStatus.PENDING)
                 .products(new ArrayList<>())
                 .build();
         //when
@@ -59,6 +62,7 @@ class OrderMapperTest {
         expectedOrder.setPaymentDate(DATE);
         expectedOrder.setAdmissionDate(DATE);
         expectedOrder.setRealizationDate(DATE);
+        expectedOrder.setOrderStatus(OrderStatus.PENDING);
         expectedOrder.setUser(new User());
         expectedOrder.setProducts(new ArrayList<>());
 
@@ -69,6 +73,7 @@ class OrderMapperTest {
                 .paymentDate(DATE)
                 .realizationDate(DATE)
                 .admissionDate(DATE)
+                .orderStatus(OrderStatus.PENDING)
                 .userLogin(USER_LOGIN)
                 .products(new ArrayList<>())
                 .build();
@@ -90,6 +95,7 @@ class OrderMapperTest {
         order.setPaymentDate(DATE);
         order.setAdmissionDate(DATE);
         order.setRealizationDate(DATE);
+        order.setOrderStatus(OrderStatus.PROCESSING);
         order.setUser(user);
         order.setProducts(new ArrayList<>());
 
@@ -101,6 +107,7 @@ class OrderMapperTest {
                 .realizationDate(DATE)
                 .admissionDate(DATE)
                 .userLogin(USER_LOGIN)
+                .orderStatus(OrderStatus.PROCESSING)
                 .products(new ArrayList<>())
                 .build();
         //when
@@ -119,6 +126,7 @@ class OrderMapperTest {
         order.setPaymentDate(DATE);
         order.setAdmissionDate(DATE);
         order.setRealizationDate(DATE);
+        order.setOrderStatus(OrderStatus.CANCELLED);
         order.setUser(new User());
         order.setProducts(new ArrayList<>());
 
@@ -129,6 +137,7 @@ class OrderMapperTest {
                 .paymentDate(DATE)
                 .realizationDate(DATE)
                 .admissionDate(DATE)
+                .orderStatus(OrderStatus.CANCELLED)
                 .userLogin(USER_LOGIN)
                 .products(new ArrayList<>())
                 .build();
