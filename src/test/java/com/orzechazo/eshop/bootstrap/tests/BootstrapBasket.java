@@ -11,9 +11,9 @@ import java.util.List;
 @Slf4j
 @Component
 public class BootstrapBasket {
-    public static final BigDecimal DB_BASKET1_PRICE = new BigDecimal("120");
+    public static final BigDecimal DB_BASKET1_TOTAL_PRICE = new BigDecimal("120");
     private final BasketRepository basketRepository;
-    public static final String DB_BASKET_ID = "BASKET1";
+    public static final String DB_BASKET1_ID = "BASKET1";
     private List<Basket> baskets;
 
     public BootstrapBasket(BasketRepository basketRepository) {
@@ -23,8 +23,8 @@ public class BootstrapBasket {
         log.debug("loading Baskets...");
 
         Basket basket1 = new Basket();
-        basket1.setBasketId(DB_BASKET_ID);
-        basket1.setTotalPrice(DB_BASKET1_PRICE);
+        basket1.setBasketId(DB_BASKET1_ID);
+        basket1.setTotalPrice(DB_BASKET1_TOTAL_PRICE);
         basketRepository.save(basket1);
 
         Basket basket2 = new Basket();

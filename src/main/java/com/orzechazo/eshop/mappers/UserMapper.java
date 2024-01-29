@@ -16,7 +16,6 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "favouriteProducts", ignore = true)
-    @Mapping(target = "basket", ignore = true)
     User userDtoToUser(UserDto userDto);
 
     @Mapping(target = "orderIdList", source = "orders", qualifiedByName = "ordersToOrderIdList")
