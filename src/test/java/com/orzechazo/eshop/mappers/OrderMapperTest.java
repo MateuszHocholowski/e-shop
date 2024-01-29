@@ -3,7 +3,7 @@ package com.orzechazo.eshop.mappers;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
-import com.orzechazo.eshop.domain.dto.UserDto;
+import com.orzechazo.eshop.domain.enums.OrderStatus;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -16,10 +16,13 @@ class OrderMapperTest {
 
     private static final LocalDateTime DATE = LocalDateTime.now();
     public static final String ORDER_ID = "1";
+    public static final String USER_LOGIN = "userLogin";
     OrderMapper mapper = OrderMapper.INSTANCE;
 
     @Test
     void orderDtoToOrder() {
+        User user = new User();
+        user.setLogin(USER_LOGIN);
         //given
         Order expectedOrder = new Order();
         expectedOrder.setOrderDate(DATE);
@@ -28,7 +31,8 @@ class OrderMapperTest {
         expectedOrder.setPaymentDate(DATE);
         expectedOrder.setAdmissionDate(DATE);
         expectedOrder.setRealizationDate(DATE);
-        expectedOrder.setUser(new User());
+        expectedOrder.setOrderStatus(OrderStatus.PENDING);
+        expectedOrder.setUser(user);
         expectedOrder.setProducts(new ArrayList<>());
 
         OrderDto orderDto = OrderDto.builder()
@@ -38,7 +42,8 @@ class OrderMapperTest {
                 .paymentDate(DATE)
                 .realizationDate(DATE)
                 .admissionDate(DATE)
-                .user(UserDto.builder().build())
+                .userLogin(USER_LOGIN)
+                .orderStatus(OrderStatus.PENDING)
                 .products(new ArrayList<>())
                 .build();
         //when
@@ -57,6 +62,7 @@ class OrderMapperTest {
         expectedOrder.setPaymentDate(DATE);
         expectedOrder.setAdmissionDate(DATE);
         expectedOrder.setRealizationDate(DATE);
+        expectedOrder.setOrderStatus(OrderStatus.PENDING);
         expectedOrder.setUser(new User());
         expectedOrder.setProducts(new ArrayList<>());
 
@@ -67,7 +73,8 @@ class OrderMapperTest {
                 .paymentDate(DATE)
                 .realizationDate(DATE)
                 .admissionDate(DATE)
-                .user(UserDto.builder().build())
+                .orderStatus(OrderStatus.PENDING)
+                .userLogin(USER_LOGIN)
                 .products(new ArrayList<>())
                 .build();
         //when
@@ -78,6 +85,9 @@ class OrderMapperTest {
     @Test
     void orderToOrderDto() {
         //given
+        User user = new User();
+        user.setLogin(USER_LOGIN);
+
         Order order = new Order();
         order.setOrderDate(DATE);
         order.setOrderId(ORDER_ID);
@@ -85,7 +95,8 @@ class OrderMapperTest {
         order.setPaymentDate(DATE);
         order.setAdmissionDate(DATE);
         order.setRealizationDate(DATE);
-        order.setUser(new User());
+        order.setOrderStatus(OrderStatus.PROCESSING);
+        order.setUser(user);
         order.setProducts(new ArrayList<>());
 
         OrderDto expectedDto = OrderDto.builder()
@@ -95,7 +106,8 @@ class OrderMapperTest {
                 .paymentDate(DATE)
                 .realizationDate(DATE)
                 .admissionDate(DATE)
-                .user(UserDto.builder().build())
+                .userLogin(USER_LOGIN)
+                .orderStatus(OrderStatus.PROCESSING)
                 .products(new ArrayList<>())
                 .build();
         //when
@@ -114,6 +126,7 @@ class OrderMapperTest {
         order.setPaymentDate(DATE);
         order.setAdmissionDate(DATE);
         order.setRealizationDate(DATE);
+        order.setOrderStatus(OrderStatus.CANCELLED);
         order.setUser(new User());
         order.setProducts(new ArrayList<>());
 
@@ -124,7 +137,8 @@ class OrderMapperTest {
                 .paymentDate(DATE)
                 .realizationDate(DATE)
                 .admissionDate(DATE)
-                .user(UserDto.builder().build())
+                .orderStatus(OrderStatus.CANCELLED)
+                .userLogin(USER_LOGIN)
                 .products(new ArrayList<>())
                 .build();
         //when

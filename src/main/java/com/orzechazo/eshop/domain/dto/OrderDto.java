@@ -1,5 +1,6 @@
 package com.orzechazo.eshop.domain.dto;
 
+import com.orzechazo.eshop.domain.enums.OrderStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ public class OrderDto {
     LocalDateTime admissionDate;
     LocalDateTime paymentDate;
     LocalDateTime realizationDate;
+    OrderStatus orderStatus;
     BigDecimal totalPrice;
-    UserDto user;
+    String userLogin;
 }

@@ -1,9 +1,12 @@
 package com.orzechazo.eshop.services;
 
+import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
+import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
+import com.orzechazo.eshop.mappers.OrderMapper;
 import com.orzechazo.eshop.mappers.UserMapper;
 import com.orzechazo.eshop.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
+    private final OrderMapper orderMapper = OrderMapper.INSTANCE;
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -27,9 +31,15 @@ public class UserServiceImpl implements UserService{
                 .toList();
     }
     @Override
-    public UserDto getUserByLogin(String login) {
-        return userMapper.userToUserDto(userRepository.findByLogin(login)
-                .orElseThrow(() -> new ResourceNotFoundException("User: " + login + " doesn't exist in database")));
+    public UserDto getUserDtoByLogin(String login) {
+        return userMapper.userToUserDto(getUserByLogin(login));
+    }
+    @Override
+    public List<OrderDto> getOrdersByUser(String userLogin) {
+        User returnedUser = getUserByLogin(userLogin);
+        return returnedUser.getOrders().stream()
+                .map(orderMapper::orderToOrderDto)
+                .toList();
     }
 
     @Override
@@ -44,8 +54,26 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        User updateUser = userMapper.userDtoToUser(userDto);
-        return saveUserAndReturnDto(updateUser);
+        User currentUser = getUserByLogin(userDto.getLogin());
+        if (userDto.getPassword() != null && !userDto.getPassword().equals(currentUser.getPassword())) {
+            currentUser.setPassword(userDto.getPassword());
+        }
+        currentUser.setBasket(userMapper.userDtoToUser(userDto).getBasket());
+        return saveUserAndReturnDto(currentUser);
+    }
+
+    @Override
+    public Order addOrder(String userLogin, Order order) {
+        User currentUser = getUserByLogin(userLogin);
+        currentUser.addOrder(order);
+        return order;
+    }
+
+    @Override
+    public void deleteOrder(Order order) {
+        User currentUser = getUserByLogin(order.getUser().getLogin());
+        currentUser.getOrders().remove(order);
+        saveUserAndReturnDto(currentUser);
     }
 
     private UserDto saveUserAndReturnDto(User user) {
@@ -55,5 +83,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUserByLogin(String login) {
         userRepository.deleteByLogin(login);
+    }
+
+    private User getUserByLogin(String login) {
+        return userRepository.findByLogin(login).orElseThrow(
+                () -> new ResourceNotFoundException("User: " + login + " doesn't exist in database."));
     }
 }
