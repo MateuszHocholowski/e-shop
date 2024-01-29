@@ -22,7 +22,7 @@ public class BootstrapUsersAndOrders {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
     }
-    private static final LocalDateTime DATE_TIME = LocalDateTime.of(2024,1,1,0,0);
+    public static final LocalDateTime DATE_TIME = LocalDateTime.of(2024,1,1,0,0);
     public static final String DB_ORDER_ID1 = "ORDER1";
     public static final String DB_ORDER_ID2 = "ORDER2";
     public static final String DB_ORDER_ID3 = "ORDER3";
