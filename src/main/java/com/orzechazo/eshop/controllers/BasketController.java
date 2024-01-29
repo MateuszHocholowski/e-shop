@@ -33,4 +33,16 @@ public class BasketController {
     public void deleteBasket(@PathVariable String basketId) {
         basketService.deleteBasket(basketId);
     }
+    @PostMapping("/{basketId}/products/add/{productName}")
+    @ResponseStatus(HttpStatus.OK)
+    public BasketDto addProductToBasket(@PathVariable String productName, @PathVariable String basketId,
+                                        @RequestParam(defaultValue = "1") String amount) {
+        return basketService.addProductToBasket(productName, basketId, Integer.parseInt(amount));
+    }
+    @PostMapping("/{basketId}/products/subtract/{productName}")
+    @ResponseStatus(HttpStatus.OK)
+    public BasketDto subtractProductFromBasket(@PathVariable String productName, @PathVariable String basketId,
+                                               @RequestParam(defaultValue = "1") String amount) {
+        return basketService.addProductToBasket(productName, basketId, Integer.parseInt(amount));
+    }
 }
