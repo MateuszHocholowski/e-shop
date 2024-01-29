@@ -15,6 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_TOTAL_PRICE;
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_ID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -25,8 +27,6 @@ class BasketServiceImplIT {
     @Autowired
     private BasketRepository basketRepository;
     private BasketServiceImpl basketService;
-    private final static String DB_BASKET_ID = BootstrapBasket.DB_BASKET_ID;
-    public static final BigDecimal BASKET1_TOTAL_PRICE = new BigDecimal("120");
     private int DB_DEFAULT_BASKET_COUNT;
 
     @BeforeEach
@@ -41,10 +41,10 @@ class BasketServiceImplIT {
     @Test
     void getBasketByBasketId() {
         //when
-        BasketDto returnedDto = basketService.getBasketDtoByBasketId(DB_BASKET_ID);
+        BasketDto returnedDto = basketService.getBasketDtoByBasketId(DB_BASKET1_ID);
         //then
-        assertEquals(DB_BASKET_ID,returnedDto.getBasketId());
-        assertEquals(BASKET1_TOTAL_PRICE,returnedDto.getTotalPrice());
+        assertEquals(DB_BASKET1_ID,returnedDto.getBasketId());
+        assertEquals(DB_BASKET1_TOTAL_PRICE,returnedDto.getTotalPrice());
     }
 
     @Test
@@ -68,21 +68,21 @@ class BasketServiceImplIT {
 
     @Test
     void createBasketExistingId() {
-        BasketDto basketDto = BasketDto.builder().basketId(DB_BASKET_ID).build();
+        BasketDto basketDto = BasketDto.builder().basketId(DB_BASKET1_ID).build();
         Exception exception = assertThrows(BadRequestException.class,
                 () -> basketService.createBasket(basketDto));
-        assertEquals("Basket already has an id: " + DB_BASKET_ID,exception.getMessage());
+        assertEquals("Basket already has an id: " + DB_BASKET1_ID,exception.getMessage());
     }
 
     @Test
     void updateBasket() {
         //given
-        BasketDto basketToUpdate = BasketDto.builder().basketId(DB_BASKET_ID)
+        BasketDto basketToUpdate = BasketDto.builder().basketId(DB_BASKET1_ID)
                 .totalPrice(new BigDecimal("540")).build();
         //when
         BasketDto updatedBasket = basketService.updateBasket(basketToUpdate);
         //then
-        assertEquals(DB_BASKET_ID,updatedBasket.getBasketId());
+        assertEquals(DB_BASKET1_ID,updatedBasket.getBasketId());
         assertEquals(new BigDecimal("540"),updatedBasket.getTotalPrice());
         assertEquals(DB_DEFAULT_BASKET_COUNT,basketRepository.count());
     }
@@ -98,7 +98,7 @@ class BasketServiceImplIT {
     @Test
     void deleteBasket() {
         //when
-        basketService.deleteBasket(DB_BASKET_ID);
+        basketService.deleteBasket(DB_BASKET1_ID);
         //then
         assertEquals(DB_DEFAULT_BASKET_COUNT-1,basketRepository.count());
     }
