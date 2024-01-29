@@ -26,8 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.DB_ORDER_ID1;
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.DB_USER_LOGIN;
+import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -38,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class OrderControllerE2ETest {
-    public static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
     public static final String ORDER_ID_NOT_IN_DB = "orderIdNotInDB";
     public static final String USER_LOGIN_NOT_IN_DB = "userNotInDb";
     @Autowired

@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class BootstrapUsersAndOrders {
+    public static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
@@ -43,7 +44,7 @@ public class BootstrapUsersAndOrders {
         order1.setAdmissionDate(DATE_TIME);
         order1.setRealizationDate(DATE_TIME);
         order1.setPaymentDate(DATE_TIME);
-        order1.setTotalPrice(new BigDecimal("100"));
+        order1.setTotalPrice(ORDER1_TOTAL_PRICE);
         orderRepository.save(order1);
 
         Order order2 = new Order();
