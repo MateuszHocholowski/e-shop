@@ -6,6 +6,7 @@ import com.orzechazo.eshop.bootstrap.tests.BootstrapBasket;
 import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
+import com.orzechazo.eshop.repositories.ProductRepository;
 import com.orzechazo.eshop.services.BasketServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,12 +37,14 @@ class BasketControllerE2ETest {
     private static final String BASKET_ID_NOT_IN_DB = "basketNotInDb";
     @Autowired
     private BasketRepository basketRepository;
+    @Autowired
+    private ProductRepository productRepository;
     private MockMvc mockMvc;
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private int DB_DEFAULT_BASKET_COUNT;
     @BeforeEach
     void setUp() {
-        BasketServiceImpl basketService = new BasketServiceImpl(basketRepository);
+        BasketServiceImpl basketService = new BasketServiceImpl(basketRepository, productRepository);
         BootstrapBasket bootstrap = new BootstrapBasket(basketRepository);
         bootstrap.loadData();
         BasketController basketController = new BasketController(basketService);
