@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService{
         if (userRepository.findByLogin(newUser.getLogin()).isEmpty()) {
             newUser.setBasket(new Basket());
             Basket.createBasketId(newUser.getBasket());
-            return saveUserAndReturnDto(newUser);
+            return userMapper.userToUserDto(userRepository.save(newUser));
         } else {
             throw new BadRequestException("User: " + userDto.getLogin() + " is already in database.");
         }
@@ -60,12 +60,8 @@ public class UserServiceImpl implements UserService{
         if (userDto.getPassword() != null && !userDto.getPassword().equals(currentUser.getPassword())) {
             currentUser.setPassword(userDto.getPassword());
         }
-        currentUser.setBasket(userMapper.userDtoToUser(userDto).getBasket());
-        return saveUserAndReturnDto(currentUser);
-    }
-
-    private UserDto saveUserAndReturnDto(User user) {
-        return userMapper.userToUserDto(userRepository.save(user));
+        return userMapper.userToUserDto(currentUser);
+        //todo implement methods to update user's Data and change the tests
     }
 
     @Override
