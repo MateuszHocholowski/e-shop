@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OrderControllerTest {
 
     public static final String ORDER_ID = "1";
+    private static final String USER_LOGIN = "login";
     @InjectMocks
     private OrderController orderController;
     @Mock
@@ -68,7 +69,7 @@ class OrderControllerTest {
         OrderDto orderDto = OrderDto.builder().orderId(ORDER_ID).build();
         when(orderService.createOrder(any())).thenReturn(orderDto);
 
-        mockMvc.perform(put("/orders/new")
+        mockMvc.perform(put("/orders/" + USER_LOGIN + "/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(orderDto)))
                 .andExpect(status().isCreated())

@@ -1,10 +1,13 @@
 package com.orzechazo.eshop.services;
 
-import com.orzechazo.eshop.bootstrap.tests.BootstrapBasket;
+import com.orzechazo.eshop.bootstrap.tests.Bootstrap;
 import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
+import com.orzechazo.eshop.repositories.OrderRepository;
+import com.orzechazo.eshop.repositories.ProductRepository;
+import com.orzechazo.eshop.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +18,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_TOTAL_PRICE;
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_ID;
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_BASKET1_TOTAL_PRICE;
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_BASKET1_ID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -26,16 +29,22 @@ class BasketServiceImplIT {
 
     @Autowired
     private BasketRepository basketRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     private BasketServiceImpl basketService;
     private int DB_DEFAULT_BASKET_COUNT;
 
     @BeforeEach
     void setUp() {
-        BootstrapBasket bootstrapBasket = new BootstrapBasket(basketRepository);
-        bootstrapBasket.loadData();
+        Bootstrap bootstrap = new Bootstrap(orderRepository,userRepository,productRepository,basketRepository);
+        bootstrap.loadData();
 
-        basketService = new BasketServiceImpl(basketRepository);
-        DB_DEFAULT_BASKET_COUNT = bootstrapBasket.getBaskets().size();
+        basketService = new BasketServiceImpl(basketRepository, productRepository);
+        DB_DEFAULT_BASKET_COUNT = bootstrap.getBaskets().size();
     }
 
     @Test

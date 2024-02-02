@@ -26,10 +26,10 @@ public class OrderController {
     public OrderDto getOrderByOrderId(@PathVariable String orderId) {
         return orderService.getOrderDtoByOrderId(orderId);
     }
-    @PutMapping("/new")
+    @PutMapping("/{userLogin}/new")
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderDto createOrder(@RequestBody OrderDto orderDto) {
-        return orderService.createOrder(orderDto);
+    public OrderDto createOrder(@PathVariable String userLogin) {
+        return orderService.createOrder(userLogin);
     }
     @DeleteMapping("/delete/{orderId}")
     @ResponseStatus(HttpStatus.OK)

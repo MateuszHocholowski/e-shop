@@ -4,7 +4,6 @@ import jakarta.persistence.Lob;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Value
 @Builder
@@ -17,5 +16,4 @@ public class ProductDto {
     String description;
     int amount;
     byte[] image;
-    BasketDto basket;
 }
