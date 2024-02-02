@@ -20,6 +20,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class Bootstrap {
+    private static final String DB_EMPTY_BASKET = "emptyBasket";
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
@@ -39,6 +40,7 @@ public class Bootstrap {
     public static final String DB_ORDER_ID5 = "ORDER5";
     public static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
     public static final String DB_USER_LOGIN = "user1";
+    public static final String EMPTY_USER = "emptyUser";
     private final List<Basket> baskets = new ArrayList<>();
     private final List<Product> products = new ArrayList<>();
     private final List<Order> orders = new ArrayList<>();
@@ -87,10 +89,9 @@ public class Bootstrap {
         basket1.setTotalPrice(DB_BASKET1_TOTAL_PRICE);
         basketRepository.save(basket1);
 
-        Basket basket2 = new Basket();
-        Basket.createBasketId(basket2);
-        basket2.setTotalPrice(new BigDecimal("210"));
-        basketRepository.save(basket2);
+        Basket emptyBasket = new Basket();
+        emptyBasket.setBasketId(DB_EMPTY_BASKET);
+        basketRepository.save(emptyBasket);
 
         Basket notEmptyBasket = new Basket();
         notEmptyBasket.setBasketId(DB_NOT_EMPTY_BASKET_ID);
@@ -98,7 +99,7 @@ public class Bootstrap {
         notEmptyBasket.setTotalPrice(new BigDecimal("320"));
         basketRepository.save(notEmptyBasket);
 
-        baskets.addAll(List.of(basket1,basket2,notEmptyBasket));
+        baskets.addAll(List.of(basket1,emptyBasket,notEmptyBasket));
 
         log.debug("Loading Orders...");
 
@@ -151,11 +152,9 @@ public class Bootstrap {
         user1_orders.addAll(user1.getOrders());
 
         User user2 = new User();
-//        user2.setBasket(new Basket());
-        user2.setLogin("user2");
+        user2.setBasket(emptyBasket);
+        user2.setLogin(EMPTY_USER);
         user2.setPassword("password2");
-        user2.addOrder(order2);
-        user2.addOrder(order4);
         userRepository.save(user2);
 
         users.addAll(List.of(user1, user2));

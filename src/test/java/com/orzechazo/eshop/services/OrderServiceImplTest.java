@@ -78,18 +78,18 @@ class OrderServiceImplTest {
     @Test
     void createOrder() {
         //given
-        Order order1 = new Order();
-        order1.setTotalPrice(PRICE);
+        Product product = new Product();
+        product.setName("productName");
 
         Basket basket = new Basket();
         basket.setBasketId(BASKET_ID);
-        basket.setProducts(Map.of(new Product(), 1));
+        basket.setTotalPrice(PRICE);
+        basket.setProducts(Map.of(product, 1));
 
         User user = new User();
         user.setLogin(USER_LOGIN);
         user.setBasket(basket);
 
-        when(orderRepository.save(any())).thenReturn(order1);
         when(userRepository.findByLogin(anyString())).thenReturn(Optional.of(user));
         //when
         OrderDto createdDto = orderService.createOrder(USER_LOGIN);
@@ -97,7 +97,6 @@ class OrderServiceImplTest {
         assertEquals(PRICE,createdDto.getTotalPrice());
         verify(userRepository, times(1)).findByLogin(anyString());
         verify(basketService,times(1)).deleteBasket(anyString());
-        verify(orderRepository,times(1)).save(any());
     }
 
     @Test

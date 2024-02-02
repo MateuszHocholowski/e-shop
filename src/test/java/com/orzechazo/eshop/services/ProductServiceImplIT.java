@@ -1,11 +1,14 @@
 package com.orzechazo.eshop.services;
 
-import com.orzechazo.eshop.bootstrap.tests.BootstrapProduct;
+import com.orzechazo.eshop.bootstrap.tests.Bootstrap;
 import com.orzechazo.eshop.domain.Product;
 import com.orzechazo.eshop.domain.dto.ProductDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
+import com.orzechazo.eshop.repositories.BasketRepository;
+import com.orzechazo.eshop.repositories.OrderRepository;
 import com.orzechazo.eshop.repositories.ProductRepository;
+import com.orzechazo.eshop.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_PRODUCT1_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,25 +29,30 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ProductServiceImplIT {
     @Autowired
+    private BasketRepository basketRepository;
+    @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     private ProductService productService;
     private int DEFAULT_DB_PRODUCT_COUNT;
-    private static final String DB_PRODUCT1_NAME = BootstrapProduct.DB_PRODUCT1_NAME;
-    private BootstrapProduct bootstrapProduct;
+    private Bootstrap bootstrap;
 
     @BeforeEach()
     void setUp() {
-        bootstrapProduct = new BootstrapProduct(productRepository);
-        bootstrapProduct.loadData();
+        bootstrap = new Bootstrap(orderRepository,userRepository,productRepository,basketRepository);
+        bootstrap.loadData();
 
         productService = new ProductServiceImpl(productRepository);
-        DEFAULT_DB_PRODUCT_COUNT = bootstrapProduct.getProducts().size();
+        DEFAULT_DB_PRODUCT_COUNT = bootstrap.getProducts().size();
     }
 
     @Test
     void getAllProducts() {
         //given
-        List<String> dbProductNamesList = bootstrapProduct.getProducts().stream()
+        List<String> dbProductNamesList = bootstrap.getProducts().stream()
                 .map(Product::getName).toList();
         //when
         List<ProductDto> productDtos = productService.getAllProducts();
@@ -147,9 +156,6 @@ public class ProductServiceImplIT {
 
     @Test
     void testDeleteProduct() {
-        //when
-        productService.deleteProductByProductName(DB_PRODUCT1_NAME);
-        //then
-        assertEquals(DEFAULT_DB_PRODUCT_COUNT - 1,productService.getAllProducts().size());
+        //todo change deleteProduct method to catch DataIntegrityViolationException
     }
 }

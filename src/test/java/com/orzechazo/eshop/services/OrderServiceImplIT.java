@@ -1,11 +1,16 @@
 package com.orzechazo.eshop.services;
 
-import com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders;
+import com.orzechazo.eshop.bootstrap.tests.Bootstrap;
+
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.dto.OrderDto;
+import com.orzechazo.eshop.domain.dto.UserDto;
+import com.orzechazo.eshop.domain.enums.OrderStatus;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
+import com.orzechazo.eshop.repositories.BasketRepository;
 import com.orzechazo.eshop.repositories.OrderRepository;
+import com.orzechazo.eshop.repositories.ProductRepository;
 import com.orzechazo.eshop.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +23,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.ORDER1_TOTAL_PRICE;
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,30 +36,36 @@ class OrderServiceImplIT {
 
 
     @Autowired
-    private OrderRepository orderRepository;
+    private BasketRepository basketRepository;
+    @Autowired
+    private ProductRepository productRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     private OrderServiceImpl orderService;
     private UserServiceImpl userService;
     private static final LocalDateTime DATE_TIME = LocalDateTime.of(2024,1,1,0,0);
-    private static final String DB_USER_LOGIN = BootstrapUsersAndOrders.DB_USER_LOGIN;
-    private static final String DB_ORDER_ID1 = BootstrapUsersAndOrders.DB_ORDER_ID1;
     private int DB_DEFAULT_ORDER_COUNT;
-    private BootstrapUsersAndOrders bootstrapUsersAndOrders;
+    private int DB_INITIAL_USER_ORDER_COUNT;
+    private Bootstrap bootstrap;
+    private BasketService basketService;
     @BeforeEach
     void setUp() {
-        bootstrapUsersAndOrders = new BootstrapUsersAndOrders(orderRepository,userRepository);
-        bootstrapUsersAndOrders.loadData();
+        bootstrap = new Bootstrap(orderRepository,userRepository,productRepository,basketRepository);
+        bootstrap.loadData();
 
+        basketService = new BasketServiceImpl(basketRepository,productRepository);
         userService = new UserServiceImpl(userRepository);
-        orderService = new OrderServiceImpl(orderRepository, userService);
-        DB_DEFAULT_ORDER_COUNT = bootstrapUsersAndOrders.getOrders().size();
+        orderService = new OrderServiceImpl(orderRepository, userRepository, basketService);
+        DB_DEFAULT_ORDER_COUNT = bootstrap.getOrders().size();
+        DB_INITIAL_USER_ORDER_COUNT = bootstrap.getUser1_orders().size();
     }
 
     @Test
     void getAllOrders() {
         //given
-        List<String> dbOrderIdList = bootstrapUsersAndOrders.getOrders().stream()
+        List<String> dbOrderIdList = bootstrap.getOrders().stream()
                 .map(Order::getOrderId).toList();
         //when
         List<OrderDto> orderDtos = orderService.getAllOrders();
@@ -64,7 +76,7 @@ class OrderServiceImplIT {
     }
 
     @Test
-    void getOrderByOrderId() {
+    void getOrderDtoByOrderId() {
         //when
         OrderDto returnedDto = orderService.getOrderDtoByOrderId(DB_ORDER_ID1);
         //then
@@ -86,35 +98,43 @@ class OrderServiceImplIT {
     @Test
     void createOrder() {
         //given
-        OrderDto orderDto = OrderDto.builder().userLogin(DB_USER_LOGIN)
-                .totalPrice(new BigDecimal("2")).build();
+        UserDto initialUser = userService.getUserDtoByLogin(DB_USER_LOGIN);
+        Set<String> expectedProductNamesSet = initialUser.getBasket().getProductNamesMap().keySet();
+        BigDecimal expectedOrderTotalPrice = initialUser.getBasket().getTotalPrice();
         //when
-        OrderDto createdDto = orderService.createOrder(orderDto);
+        OrderDto createdDto = orderService.createOrder(DB_USER_LOGIN);
+        UserDto updatedUser = userService.getUserDtoByLogin(DB_USER_LOGIN);
+
         //then
+        assertEquals(DB_USER_LOGIN, createdDto.getUserLogin());
         assertNotNull(createdDto.getOrderId());
         assertNotNull(createdDto.getOrderDate());
-        assertEquals(new BigDecimal("2"),createdDto.getTotalPrice());
+        assertEquals(OrderStatus.PENDING, createdDto.getOrderStatus());
+        assertEquals(expectedOrderTotalPrice, createdDto.getTotalPrice());
+        assertEquals(expectedProductNamesSet, createdDto.getProductNamesMap().keySet());
+
         assertEquals(DB_DEFAULT_ORDER_COUNT+1,orderRepository.count());
-        assertEquals(DB_USER_LOGIN, createdDto.getUserLogin());
+        assertEquals(DB_INITIAL_USER_ORDER_COUNT + 1, updatedUser.getOrderIdList().size());
+        assertTrue(updatedUser.getBasket().getProductNamesMap().isEmpty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> basketService.getBasketDtoByBasketId(initialUser.getBasket().getBasketId()));
     }
 
     @Test
-    void createOrderExistingId() {
-        OrderDto orderDto = OrderDto.builder().orderId(DB_ORDER_ID1).build();
+    void tryToCreateOrderFromEmptyBasket() {
         Exception exception = assertThrows(BadRequestException.class,
-                () -> orderService.createOrder(orderDto));
-        assertEquals("Order already has an id: " + DB_ORDER_ID1,exception.getMessage());
+                ()-> orderService.createOrder(EMPTY_USER));
+        assertEquals("Cannot create order: basket is empty", exception.getMessage());
     }
 
     @Test
     void deleteOrderByOrderId() {
-        //given
-        long dbUser1OrderIdListSize = bootstrapUsersAndOrders.getUser1_orders().size();
         //when
         orderService.deleteOrderByOrderId(DB_ORDER_ID1);
-        long currentUser1OrderIdListSize = userService.getUserDtoByLogin(DB_USER_LOGIN).getOrderIdList().size();
+        long currentUserOrderIdListSize = userService.getUserDtoByLogin(DB_USER_LOGIN).getOrderIdList().size();
         //then
         assertEquals(DB_DEFAULT_ORDER_COUNT-1, orderRepository.count());
-        assertEquals(dbUser1OrderIdListSize -1, currentUser1OrderIdListSize);
+        assertEquals(DB_INITIAL_USER_ORDER_COUNT -1, currentUserOrderIdListSize);
     }
 }

@@ -8,6 +8,7 @@ import com.orzechazo.eshop.domain.dto.UserDto;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +75,7 @@ class UserMapperTest {
                 .login("login")
                 .orderIdList(new ArrayList<>())
                 .favouriteProducts(new ArrayList<>())
-                .basket(BasketDto.builder().build())
+                .basket(BasketDto.builder().productNamesMap(new HashMap<>()).build())
                 .build();
         //when
         UserDto mappedDto = mapper.userToUserDto(user);

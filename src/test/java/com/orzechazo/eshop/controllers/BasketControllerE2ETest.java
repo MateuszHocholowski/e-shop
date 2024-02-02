@@ -2,11 +2,13 @@ package com.orzechazo.eshop.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.orzechazo.eshop.bootstrap.tests.BootstrapBasket;
+import com.orzechazo.eshop.bootstrap.tests.Bootstrap;
 import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
+import com.orzechazo.eshop.repositories.OrderRepository;
 import com.orzechazo.eshop.repositories.ProductRepository;
+import com.orzechazo.eshop.repositories.UserRepository;
 import com.orzechazo.eshop.services.BasketServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +24,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_ID;
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapBasket.DB_BASKET1_TOTAL_PRICE;
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_BASKET1_ID;
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_BASKET1_TOTAL_PRICE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,13 +41,17 @@ class BasketControllerE2ETest {
     private BasketRepository basketRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     private MockMvc mockMvc;
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private int DB_DEFAULT_BASKET_COUNT;
     @BeforeEach
     void setUp() {
         BasketServiceImpl basketService = new BasketServiceImpl(basketRepository, productRepository);
-        BootstrapBasket bootstrap = new BootstrapBasket(basketRepository);
+        Bootstrap bootstrap = new Bootstrap(orderRepository,userRepository,productRepository,basketRepository);
         bootstrap.loadData();
         BasketController basketController = new BasketController(basketService);
         mockMvc = MockMvcBuilders.standaloneSetup(basketController).build();
