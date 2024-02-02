@@ -1,6 +1,6 @@
 package com.orzechazo.eshop.services;
 
-import com.orzechazo.eshop.domain.Order;
+import com.orzechazo.eshop.domain.Basket;
 import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
@@ -46,6 +46,8 @@ public class UserServiceImpl implements UserService{
     public UserDto createUser(UserDto userDto) {
         User newUser = userMapper.userDtoToUser(userDto);
         if (userRepository.findByLogin(newUser.getLogin()).isEmpty()) {
+            newUser.setBasket(new Basket());
+            Basket.createBasketId(newUser.getBasket());
             return saveUserAndReturnDto(newUser);
         } else {
             throw new BadRequestException("User: " + userDto.getLogin() + " is already in database.");
@@ -60,20 +62,6 @@ public class UserServiceImpl implements UserService{
         }
         currentUser.setBasket(userMapper.userDtoToUser(userDto).getBasket());
         return saveUserAndReturnDto(currentUser);
-    }
-
-    @Override
-    public Order addOrder(String userLogin, Order order) {
-        User currentUser = getUserByLogin(userLogin);
-        currentUser.addOrder(order);
-        return order;
-    }
-
-    @Override
-    public void deleteOrder(Order order) {
-        User currentUser = getUserByLogin(order.getUser().getLogin());
-        currentUser.getOrders().remove(order);
-        saveUserAndReturnDto(currentUser);
     }
 
     private UserDto saveUserAndReturnDto(User user) {
