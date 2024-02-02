@@ -15,7 +15,6 @@ import java.util.List;
 @Slf4j
 @Component
 public class BootstrapUsersAndOrders {
-    public static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
