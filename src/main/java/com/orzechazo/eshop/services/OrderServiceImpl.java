@@ -55,10 +55,6 @@ public class OrderServiceImpl implements OrderService{
         return addOrderToUser(currentUser, newOrder);
     }
 
-    private OrderDto saveOrderAndReturnDto(Order order) {
-        return orderMapper.orderToOrderDto(orderRepository.save(order));
-    }
-
     @Override
     public void deleteOrderByOrderId(String orderId) {
         Order orderToDelete = getOrderByOrderId(orderId);
@@ -73,7 +69,7 @@ public class OrderServiceImpl implements OrderService{
         Basket.createBasketId(newUserBasket);
         currentUser.setBasket(newUserBasket);
 
-        return saveOrderAndReturnDto(orderToAdd);
+        return orderMapper.orderToOrderDto(orderToAdd);
     }
     private void turnBasketIntoOrder(Basket usersBasket, Order newOrder) {
         if (usersBasket.getProducts().isEmpty()) {
