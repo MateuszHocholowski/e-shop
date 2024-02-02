@@ -49,7 +49,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserByLogin() {
+    void getUserDtoByLogin() {
         //given
         User user1 = new User();
         user1.setId(1L);
@@ -71,11 +71,14 @@ class UserServiceImplTest {
         //given
         Order order1 = new Order();
         order1.setOrderId("order1");
+
         Order order2 = new Order();
         order2.setOrderId("order2");
+
         User user = new User();
         user.setLogin(USER_LOGIN);
         user.setOrders(List.of(order1,order2));
+
         List<String> orderIds = user.getOrders().stream().map(Order::getOrderId).toList();
         when(userRepository.findByLogin(anyString())).thenReturn(Optional.of(user));
         //when
@@ -84,7 +87,6 @@ class UserServiceImplTest {
         //then
         assertEquals(2,returnedDtos.size());
         assertThat(returnedDtosOrderIds).containsExactlyInAnyOrderElementsOf(orderIds);
-
     }
 
     @Test
@@ -143,35 +145,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void addOrder() {
-        User user = new User();
-        user.setLogin("newUser");
-        Order order = new Order();
-        order.setOrderId("order1");
-        when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
-        //when
-        Order returnedOrder = userService.addOrder("newUser",order);
-        //then
-        assertEquals("newUser",returnedOrder.getUser().getLogin());
-        assertThat(user.getOrders()).containsExactlyInAnyOrderElementsOf(List.of(order));
-    }
-
-    @Test
-    void deleteOrder() {
-        User user = new User();
-        user.setLogin(USER_LOGIN);
-        Order order = new Order();
-        user.addOrder(order);
-        when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
-        //when
-        userService.deleteOrder(order);
-        //then
-        assertThat(user.getOrders()).isEmpty();
-        verify(userRepository,times(1)).save(any());
-    }
-
-    @Test
-    void deleteUserById() {
+    void deleteUserByLogin() {
         //when
         userService.deleteUserByLogin(USER_LOGIN);
         //then

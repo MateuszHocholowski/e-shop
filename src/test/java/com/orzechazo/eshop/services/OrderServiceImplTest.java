@@ -1,10 +1,14 @@
 package com.orzechazo.eshop.services;
 
+import com.orzechazo.eshop.domain.Basket;
 import com.orzechazo.eshop.domain.Order;
+import com.orzechazo.eshop.domain.Product;
+import com.orzechazo.eshop.domain.User;
 import com.orzechazo.eshop.domain.dto.OrderDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.OrderRepository;
+import com.orzechazo.eshop.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,12 +28,16 @@ import static org.mockito.Mockito.*;
 class OrderServiceImplTest {
     private final static BigDecimal PRICE = new BigDecimal("13");
     public static final String ORDER_ID = "1";
+    private static final String USER_LOGIN = "login";
+    private static final String BASKET_ID = "basketId";
     @InjectMocks
     private OrderServiceImpl orderService;
     @Mock
-    private UserServiceImpl userService;
-    @Mock
     private OrderRepository orderRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private BasketService basketService;
 
     @Test
     void getAllOrders() {
@@ -48,7 +57,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void getOrderByOrderId() {
+    void getOrderDtoByOrderId() {
         //given
         Order order1 = new Order();
         order1.setTotalPrice(PRICE);
@@ -71,28 +80,43 @@ class OrderServiceImplTest {
         //given
         Order order1 = new Order();
         order1.setTotalPrice(PRICE);
-        OrderDto orderDto = OrderDto.builder().userLogin("login").build();
-        when(userService.addOrder(anyString(),any())).thenReturn(order1);
+
+        Basket basket = new Basket();
+        basket.setBasketId(BASKET_ID);
+        basket.setProducts(Map.of(new Product(), 1));
+
+        User user = new User();
+        user.setLogin(USER_LOGIN);
+        user.setBasket(basket);
+
         when(orderRepository.save(any())).thenReturn(order1);
+        when(userRepository.findByLogin(anyString())).thenReturn(Optional.of(user));
         //when
-        OrderDto createdDto = orderService.createOrder(orderDto);
+        OrderDto createdDto = orderService.createOrder(USER_LOGIN);
         //then
         assertEquals(PRICE,createdDto.getTotalPrice());
-        verify(userService,times(1)).addOrder(anyString(),any());
+        verify(userRepository, times(1)).findByLogin(anyString());
+        verify(basketService,times(1)).deleteBasket(anyString());
         verify(orderRepository,times(1)).save(any());
     }
 
     @Test
-    void createOrderExistingId() {
-        Exception exception = assertThrows(BadRequestException.class,
-                () -> orderService.createOrder(OrderDto.builder().orderId(ORDER_ID).build()));
-        assertEquals("Order already has an id: 1",exception.getMessage());
+    void createOrderWIthEmptyBasket() {
+        //given
+        User user = new User();
+        user.setLogin(USER_LOGIN);
+        user.setBasket(new Basket());
+        when(userRepository.findByLogin(anyString())).thenReturn(Optional.of(user));
+        //when
+        assertThrows(BadRequestException.class,()-> orderService.createOrder(USER_LOGIN));
     }
 
     @Test
     void deleteOrderByOrderId() {
         //given
         Order order = new Order();
+        User user = new User();
+        order.setUser(user);
         when(orderRepository.findByOrderId(any())).thenReturn(Optional.of(order));
         //when
         orderService.deleteOrderByOrderId(ORDER_ID);
