@@ -8,6 +8,7 @@ import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
 import com.orzechazo.eshop.repositories.ProductRepository;
 import com.orzechazo.eshop.exceptions.BadRequestException;
+import com.orzechazo.eshop.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,9 +38,9 @@ class BasketServiceImplIT {
     private static final String PRODUCT_NOT_IN_DB = "productNotInDB";
     @Autowired
     private BasketRepository basketRepository;
-    private BasketServiceImpl basketService;
     @Autowired
     private ProductRepository productRepository;
+    private BasketServiceImpl basketService;
     private int DB_DEFAULT_BASKET_COUNT;
     private Set<String> basketProductNameSet;
 
