@@ -6,14 +6,14 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 
 @Value
 @Builder
 public class OrderDto {
 
     String orderId;
-    List<ProductDto> products;
+    Map<String, Integer> productNamesMap;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     LocalDateTime orderDate;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")

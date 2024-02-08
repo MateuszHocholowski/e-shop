@@ -2,14 +2,15 @@ package com.orzechazo.eshop.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders;
+import com.orzechazo.eshop.bootstrap.tests.Bootstrap;
 import com.orzechazo.eshop.domain.Order;
 import com.orzechazo.eshop.domain.User;
-import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.domain.dto.UserDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
+import com.orzechazo.eshop.repositories.BasketRepository;
 import com.orzechazo.eshop.repositories.OrderRepository;
+import com.orzechazo.eshop.repositories.ProductRepository;
 import com.orzechazo.eshop.repositories.UserRepository;
 import com.orzechazo.eshop.services.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import java.util.Objects;
 
-import static com.orzechazo.eshop.bootstrap.tests.BootstrapUsersAndOrders.DB_USER_LOGIN;
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_USER_LOGIN;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -40,6 +41,10 @@ class UserControllerE2ETest {
 
     private static final String USER_LOGIN_NOT_IN_DB = "userNotInDb";
     @Autowired
+    private BasketRepository basketRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private OrderRepository orderRepository;
@@ -47,11 +52,11 @@ class UserControllerE2ETest {
     private final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private static int DEFAULT_DB_USER_COUNT;
     private List<String> DB_USER1_ORDER_ID_LIST;
-    private BootstrapUsersAndOrders bootstrap;
+    private Bootstrap bootstrap;
 
     @BeforeEach
     void setUp() {
-        bootstrap = new BootstrapUsersAndOrders(orderRepository, userRepository);
+        bootstrap = new Bootstrap(orderRepository, userRepository, productRepository, basketRepository);
         bootstrap.loadData();
 
         UserServiceImpl userService = new UserServiceImpl(userRepository);
@@ -64,6 +69,7 @@ class UserControllerE2ETest {
     @Test
     void getAllUsers() throws Exception {
         List<String> DB_USERS_LOGINS_LIST = bootstrap.getUsers().stream().map(User::getLogin).toList();
+
         mockMvc.perform(get("/users")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -149,17 +155,16 @@ class UserControllerE2ETest {
 
     @Test
     void updateUser() throws Exception {
-        BasketDto newBasket = BasketDto.builder().basketId("newBasket").build();
-        UserDto userToUpdate = UserDto.builder().login(DB_USER_LOGIN).basket(newBasket).build();
+        UserDto userToUpdate = UserDto.builder().login(DB_USER_LOGIN).password("newPassword").build();
         mockMvc.perform(post("/users/"+ DB_USER_LOGIN + "/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writer.writeValueAsString(userToUpdate))
                 .param("login",DB_USER_LOGIN))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.login",equalTo(DB_USER_LOGIN)))
-                .andExpect(jsonPath("$.basket.basketId",equalTo("newBasket")));
+                .andExpect(jsonPath("$.login",equalTo(DB_USER_LOGIN)));
 
         assertEquals(DEFAULT_DB_USER_COUNT,userRepository.count());
+        //todo implement methods to update user's Data and change the test
     }
 
     @Test

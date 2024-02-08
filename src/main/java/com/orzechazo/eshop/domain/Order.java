@@ -8,7 +8,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -20,17 +21,27 @@ public class Order extends BaseEntity{
 
     @Column(unique = true)
     private String orderId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
-    private List<Product> products;
+
+    @ManyToOne
+    private User user;
+
+    @ElementCollection
+    @CollectionTable(name = "ORDER_PRODUCTS",
+            joinColumns = @JoinColumn(name = "order_id"))
+    @MapKeyJoinColumn(name = "product_id")
+    @Column(name = "amount")
+    private Map<Product, Integer> products = new HashMap<>();
+
+    private BigDecimal totalPrice;
+
     private LocalDateTime orderDate;
     private LocalDateTime admissionDate;
     private LocalDateTime paymentDate;
     private LocalDateTime realizationDate;
-    private BigDecimal totalPrice;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-    @ManyToOne
-    private User user;
+
 
     public static void createOrderId(Order order) {
         if(order.orderId == null) {

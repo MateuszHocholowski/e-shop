@@ -25,8 +25,6 @@ public class Product extends BaseEntity {
     private int amount;
     private byte[] image;
     @ManyToOne
-    private Order order;
-    @ManyToOne
     private User user;
 
 
