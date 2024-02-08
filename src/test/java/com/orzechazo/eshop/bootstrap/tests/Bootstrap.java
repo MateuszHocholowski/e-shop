@@ -21,11 +21,12 @@ import java.util.Map;
 @Component
 public class Bootstrap {
     private static final String DB_EMPTY_BASKET = "emptyBasket";
+    public static final int DB_PRODUCT1_AMOUNT = 5;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final BasketRepository basketRepository;
-    private static final BigDecimal DB_PRODUCT1_GROSS_PRICE = new BigDecimal("3.1");
+    public static final BigDecimal DB_PRODUCT1_GROSS_PRICE = new BigDecimal("3.1");
     public static final String DB_PRODUCT1_NAME = "dbProduct1";
     public static final String DB_PRODUCT2_NAME = "dbProduct2";
     public static final String DB_PRODUCT3_NAME = "dbProduct3";
@@ -58,7 +59,7 @@ public class Bootstrap {
         log.debug("Loading products...");
         Product product1 = new Product();
         product1.setName(DB_PRODUCT1_NAME);
-        product1.setAmount(5);
+        product1.setAmount(DB_PRODUCT1_AMOUNT);
         product1.setNetPrice(new BigDecimal("1.5"));
         product1.setGrossPrice(DB_PRODUCT1_GROSS_PRICE);
         product1.setDescription("testDescription1");

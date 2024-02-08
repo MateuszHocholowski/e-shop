@@ -25,9 +25,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_BASKET1_ID;
-import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.DB_BASKET1_TOTAL_PRICE;
-import static org.hamcrest.Matchers.equalTo;
+import static com.orzechazo.eshop.bootstrap.tests.Bootstrap.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
