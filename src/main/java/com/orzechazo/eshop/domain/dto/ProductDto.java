@@ -1,6 +1,5 @@
 package com.orzechazo.eshop.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -13,7 +12,6 @@ import java.math.BigDecimal;
 public class ProductDto {
 
     @NotEmpty
-    @JsonProperty(value = "Product Name")
     String name;
     @PositiveOrZero
     BigDecimal netPrice;
