@@ -6,6 +6,7 @@ import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.mappers.OrderMapper;
 import com.orzechazo.eshop.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +35,7 @@ public class OrderServiceImpl implements OrderService{
         return orderMapper.orderToOrderDto(getOrderByOrderId(orderId));
     }
 
+    @Transactional
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         Order newOrder = orderMapper.orderDtoToOrder(orderDto);
