@@ -24,7 +24,6 @@ public class BootstrapUsersAndOrders {
         this.userRepository = userRepository;
     }
     public static final LocalDateTime DATE_TIME = LocalDateTime.of(2024,1,1,0,0);
-    public static final BigDecimal ORDER1_TOTAL_PRICE = new BigDecimal("100");
     public static final String DB_ORDER_ID1 = "ORDER1";
     public static final String DB_ORDER_ID2 = "ORDER2";
     public static final String DB_ORDER_ID3 = "ORDER3";

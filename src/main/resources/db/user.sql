@@ -1,0 +1,1 @@
+GRANT ALL PRIVILEGES ON eshop.* TO 'eshop'@'%' IDENTIFIED BY 'eshop';
