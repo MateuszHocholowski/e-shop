@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  eshop:
+    build:
+      context: .
+      target: development
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    environment:
+      - MYSQL_URL=jdbc:mysql://eshop-mysql/eshop
+      - SERVER_PORT=8080
+      - MYSQL_USER=eshop
+      - MYSQL_PASSWORD=eshop
+    depends_on:
+      - eshop-mysql
+
+  eshop-mysql:
+    image: mysql:8.0
+    ports:
+      - "3366:3366"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=eshop
+      - MYSQL_PASSWORD=eshop
+      - MYSQL_DATABASE=eshop
+    command: ['--lower_case_table_names=1']
