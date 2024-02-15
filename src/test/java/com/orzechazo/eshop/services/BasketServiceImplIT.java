@@ -5,6 +5,7 @@ import com.orzechazo.eshop.domain.dto.BasketDto;
 import com.orzechazo.eshop.exceptions.BadRequestException;
 import com.orzechazo.eshop.exceptions.ResourceNotFoundException;
 import com.orzechazo.eshop.repositories.BasketRepository;
+import com.orzechazo.eshop.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,8 @@ class BasketServiceImplIT {
 
     @Autowired
     private BasketRepository basketRepository;
+    @Autowired
+    private ProductRepository productRepository;
     private BasketServiceImpl basketService;
     private int DB_DEFAULT_BASKET_COUNT;
 
@@ -34,7 +37,7 @@ class BasketServiceImplIT {
         BootstrapBasket bootstrapBasket = new BootstrapBasket(basketRepository);
         bootstrapBasket.loadData();
 
-        basketService = new BasketServiceImpl(basketRepository);
+        basketService = new BasketServiceImpl(basketRepository, productRepository);
         DB_DEFAULT_BASKET_COUNT = bootstrapBasket.getBaskets().size();
     }
 

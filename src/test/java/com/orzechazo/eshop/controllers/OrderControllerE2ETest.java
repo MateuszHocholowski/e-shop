@@ -21,7 +21,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -120,7 +119,7 @@ class OrderControllerE2ETest {
                 .content(writer.writeValueAsString(newOrder)))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("User:"+ USER_LOGIN_NOT_IN_DB + " doesn't exist in database.",
+                .andExpect(result -> assertEquals("User: "+ USER_LOGIN_NOT_IN_DB + " doesn't exist in database.",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
